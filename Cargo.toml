@@ -1,0 +1,9 @@
+[package]
+name = "iron_sky"
+version = "0.1.0"
+authors = ["Mischka <mischka.kamener@gmail.com>"]
+
+[dependencies]
+piston_window = "0.80.0"
+find_folder = "0.3.0"
+piston2d-sprite = "0.45.0"
