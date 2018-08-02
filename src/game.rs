@@ -230,28 +230,6 @@ impl ScrollingBG {
     }
 }
 
-// pub fn draw_tiled_backgound(
-//     height: u32,
-//     width: u32,
-//     sprite: &mut Sprite<G2dTexture>,
-//     scroller: &ScrollingBG,
-//     context: piston_window::Context,
-//     g: &mut G2d,
-// ) -> () {
-//     let max_x = ((width as f64) / (scroller.clamp.x)) as i32 + 1;
-//     let max_y = ((height as f64) / (scroller.clamp.y)) as i32 + 1;
-
-//     for x in -1..=max_x {
-//         for y in -1..=max_y {
-//             let x_pos = scroller.pos.x + (x as f64) * scroller.clamp.x;
-//             let y_pos = scroller.pos.y + (y as f64) * scroller.clamp.y;
-
-//             sprite.set_position(x_pos, y_pos);
-//             sprite.draw(context.transform, g);
-//         }
-//     }
-// }
-
 pub struct Background(Vec<ScrollingBG>);
 
 impl Background {
