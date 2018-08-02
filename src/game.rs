@@ -1,6 +1,8 @@
 extern crate piston_window;
+extern crate sprite;
 
 use piston_window::*;
+use sprite::*;
 use std::ops::{Add, Div, Mul, Sub};
 
 #[derive(Copy, Clone)]
@@ -174,6 +176,127 @@ impl Missile {
         let player_dir = Point::new(player.rot.to_radians().cos(), player.rot.to_radians().sin());
         self.collider.pos = self.collider.pos - player_dir * Player::SPEED * dt;
     }
+}
+
+pub struct ScrollingBG {
+    sprite: Sprite<G2dTexture>,
+    pos: Point,
+    clamp: Point,
+    factor: f64,
+}
+
+impl ScrollingBG {
+    fn new(sprite: Sprite<G2dTexture>, factor: f64) -> ScrollingBG {
+        let clamp = sprite.bounding_box();
+        let clamp = Point::new(clamp[2], clamp[3]);
+        ScrollingBG {
+            sprite: sprite,
+            pos: Point::new(0.0, 0.0),
+            clamp: clamp,
+            factor: factor,
+        }
+    }
+
+    fn update(&mut self, player: &Player, dt: f64) {
+        // Update position based off player movement
+        let player_dir = Point::new(player.rot.to_radians().cos(), player.rot.to_radians().sin());
+        self.pos = self.pos - player_dir * Player::SPEED * dt * self.factor;
+
+        // Clamp position to bounding box
+        let new_x = ((self.pos.x % self.clamp.x) + self.clamp.x) % self.clamp.x;
+        let new_y = ((self.pos.y % self.clamp.y) + self.clamp.y) % self.clamp.y;
+        self.pos = Point::new(new_x, new_y);
+    }
+
+    fn draw(
+        &mut self,
+        height: u32,
+        width: u32,
+        context: piston_window::Context,
+        g: &mut G2d,
+    ) -> () {
+        let max_x = ((width as f64) / (self.clamp.x)) as i32 + 1;
+        let max_y = ((height as f64) / (self.clamp.y)) as i32 + 1;
+
+        for x in -1..=max_x {
+            for y in -1..=max_y {
+                let x_pos = self.pos.x + (x as f64) * self.clamp.x;
+                let y_pos = self.pos.y + (y as f64) * self.clamp.y;
+
+                self.sprite.set_position(x_pos, y_pos);
+                self.sprite.draw(context.transform, g);
+            }
+        }
+    }
+}
+
+// pub fn draw_tiled_backgound(
+//     height: u32,
+//     width: u32,
+//     sprite: &mut Sprite<G2dTexture>,
+//     scroller: &ScrollingBG,
+//     context: piston_window::Context,
+//     g: &mut G2d,
+// ) -> () {
+//     let max_x = ((width as f64) / (scroller.clamp.x)) as i32 + 1;
+//     let max_y = ((height as f64) / (scroller.clamp.y)) as i32 + 1;
+
+//     for x in -1..=max_x {
+//         for y in -1..=max_y {
+//             let x_pos = scroller.pos.x + (x as f64) * scroller.clamp.x;
+//             let y_pos = scroller.pos.y + (y as f64) * scroller.clamp.y;
+
+//             sprite.set_position(x_pos, y_pos);
+//             sprite.draw(context.transform, g);
+//         }
+//     }
+// }
+
+pub struct Background(Vec<ScrollingBG>);
+
+impl Background {
+    pub fn new(
+        window: &mut PistonWindow,
+        folder: &::std::path::PathBuf,
+        names_and_factors: Vec<(&str, f64)>,
+    ) -> Background {
+        let mut all_bg: Vec<ScrollingBG> = vec![];
+
+        for (file, factor) in names_and_factors {
+            let bg = load_sprite(window, folder, file);
+            all_bg.push(ScrollingBG::new(bg, factor));
+        }
+
+        Background(all_bg)
+    }
+
+    pub fn update(&mut self, player: &Player, dt: f64) -> () {
+        let Background(ref mut backgrounds) = *self;
+        for bg in backgrounds.iter_mut() {
+            bg.update(player, dt);
+        }
+    }
+
+    pub fn draw(&mut self, height: u32, width: u32, context: piston_window::Context, g: &mut G2d) {
+        let Background(ref mut backgrounds) = *self;
+        for bg in &mut backgrounds.iter_mut() {
+            bg.draw(height, width, context, g);
+        }
+    }
+}
+
+pub fn load_sprite(
+    window: &mut PistonWindow,
+    folder: &::std::path::PathBuf,
+    file: &str,
+) -> Sprite<G2dTexture> {
+    let texture = Texture::from_path(
+        &mut window.factory,
+        folder.join(file),
+        Flip::None,
+        &TextureSettings::new(),
+    ).unwrap();
+    Sprite::from_texture(::std::rc::Rc::new(texture))
 }
 
 #[cfg(test)]
