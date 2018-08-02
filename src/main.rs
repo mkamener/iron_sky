@@ -1,12 +1,12 @@
+extern crate find_folder;
 extern crate piston_window;
 extern crate sprite;
-extern crate find_folder;
 
-use std::rc::Rc;
 use piston_window::*;
 use sprite::*;
+use std::rc::Rc;
 
-use std::ops::{Add, Sub, Mul, Div};
+use std::ops::{Add, Div, Mul, Sub};
 
 #[derive(Copy, Clone)]
 enum Actions {
@@ -31,7 +31,10 @@ impl Add for Point {
     type Output = Self;
 
     fn add(self, other: Self) -> Self {
-        Point {x: self.x + other.x, y: self.y + other.y}
+        Point {
+            x: self.x + other.x,
+            y: self.y + other.y,
+        }
     }
 }
 
@@ -39,7 +42,10 @@ impl Sub for Point {
     type Output = Self;
 
     fn sub(self, other: Self) -> Self {
-        Point {x: self.x - other.x, y: self.y - other.y}
+        Point {
+            x: self.x - other.x,
+            y: self.y - other.y,
+        }
     }
 }
 
@@ -47,7 +53,10 @@ impl Mul<f64> for Point {
     type Output = Self;
 
     fn mul(self, other: f64) -> Self {
-        Point {x: self.x * other, y: self.y * other}
+        Point {
+            x: self.x * other,
+            y: self.y * other,
+        }
     }
 }
 
@@ -58,31 +67,53 @@ impl Div<f64> for Point {
         if other == 0.0 {
             panic!("Tried to divide a point by zero");
         }
-        Point {x: self.x / other, y: self.y / other}
+        Point {
+            x: self.x / other,
+            y: self.y / other,
+        }
     }
 }
 
 impl Point {
     fn new(x: f64, y: f64) -> Point {
-        Point {
-            x: x,
-            y: y,
-        }
+        Point { x: x, y: y }
     }
 
-    fn normalize(p: & Point) -> Point {
-        let magnitude = p.magnitude();
+    fn normalized(self) -> Point {
+        let magnitude = self.magnitude();
         if magnitude > 0.0 {
-            Point::new(p.x / magnitude, p.y / magnitude)
+            Point::new(self.x / magnitude, self.y / magnitude)
         } else {
             Point::new(0.0, 0.0)
         }
     }
 
     fn magnitude(&self) -> f64 {
-        (self.x.powi(2) + self.y.powi(2)).sqrt()  
+        (self.x.powi(2) + self.y.powi(2)).sqrt()
+    }
+}
+
+struct Collider {
+    pos: Point,
+    r: f64,
+}
+
+impl Collider {
+    fn new(x: f64, y: f64, r: f64) -> Collider {
+        if r <= 0.0 {
+            panic!("Radius of collider must be greater than 0");
+        }
+        Collider {
+            pos: Point::new(x, y),
+            r: r,
+        }
     }
 
+    fn collides_with(&self, other: &Collider) -> bool {
+        let min_distance = self.r + other.r;
+        let distance = (self.pos - other.pos).magnitude();
+        distance < min_distance
+    }
 }
 
 struct Player {
@@ -91,18 +122,17 @@ struct Player {
 }
 
 impl Player {
-    fn new(x: f64, y: f64) -> Player {
-        Player {
-            pos: Point::new(x, y),
-            rot: 0.0,
-        }
+    const SPEED: f64 = 800.0;
+
+    fn new(pos: Point) -> Player {
+        Player { pos: pos, rot: 0.0 }
     }
 
     fn update(&mut self, action: Actions, dt: f64) {
-        let added_rotation = 360.0 as f64;
+        let added_rotation = 270.0 as f64;
         match action {
-            Actions::Left => self.rot = self.rot - added_rotation*dt,
-            Actions::Right => self.rot = self.rot + added_rotation*dt,
+            Actions::Left => self.rot = self.rot - added_rotation * dt,
+            Actions::Right => self.rot = self.rot + added_rotation * dt,
             Actions::NoMove => (),
         }
     }
@@ -114,8 +144,8 @@ struct Missile {
 }
 
 impl Missile {
-    const MAX_SPEED: f64 = 300.0;
-    const ACCELERATION: f64 = 500.0;
+    const MAX_SPEED: f64 = 1200.0;
+    const ACCELERATION: f64 = 3000.0;
 
     fn new(pos: Point, velocity: Point) -> Missile {
         Missile {
@@ -124,86 +154,181 @@ impl Missile {
         }
     }
 
-    fn update(&mut self, target: Point, dt: f64) {
-        self.velocity = self.velocity + Point::normalize(&(target - self.pos)) * Missile::ACCELERATION * dt;
-        if self.velocity.magnitude() >= Missile::MAX_SPEED {
-            self.velocity = Point::normalize(&self.velocity) * Missile::MAX_SPEED;
-        }
+    fn update(&mut self, player: &Player, dt: f64) {
+        // Update position (x = x + v*dt)
         self.pos = self.pos + self.velocity * dt;
+
+        // Update velocity and cap (v = v + a*dt)
+        self.velocity =
+            self.velocity + (player.pos - self.pos).normalized() * Missile::ACCELERATION * dt;
+        if self.velocity.magnitude() >= Missile::MAX_SPEED {
+            self.velocity = self.velocity.normalized() * Missile::MAX_SPEED;
+        }
+
+        // Update position based off player movement
+        let player_dir = Point::new(player.rot.to_radians().cos(), player.rot.to_radians().sin());
+        self.pos = self.pos - player_dir * Player::SPEED * dt;
     }
 }
 
+struct ScrollingBG {
+    pos: Point,
+    clamp: Point,
+    factor: f64,
+}
+
+impl ScrollingBG {
+    fn new(clamp: Point, factor: f64) -> ScrollingBG {
+        ScrollingBG {
+            pos: Point::new(0.0, 0.0),
+            clamp: clamp,
+            factor: factor,
+        }
+    }
+
+    fn update(&mut self, player: &Player, dt: f64) {
+        // Update position based off player movement
+        let player_dir = Point::new(player.rot.to_radians().cos(), player.rot.to_radians().sin());
+        self.pos = self.pos - player_dir * Player::SPEED * dt * self.factor;
+
+        // Clamp position to bounding box
+        let new_x = ((self.pos.x % self.clamp.x) + self.clamp.x) % self.clamp.x;
+        let new_y = ((self.pos.y % self.clamp.y) + self.clamp.y) % self.clamp.y;
+        self.pos = Point::new(new_x, new_y);
+    }
+}
+
+fn draw_tiled_backgound(
+    height: u32,
+    width: u32,
+    sprite: &mut Sprite<G2dTexture>,
+    scroller: &ScrollingBG,
+    context: piston_window::Context,
+    g: &mut G2d,
+) -> () {
+    let max_x = ((width as f64) / (scroller.clamp.x)) as i32 + 1;
+    let max_y = ((height as f64) / (scroller.clamp.y)) as i32 + 1;
+
+    for x in -1..=max_x {
+        for y in -1..=max_y {
+            let x_pos = scroller.pos.x + (x as f64) * scroller.clamp.x;
+            let y_pos = scroller.pos.y + (y as f64) * scroller.clamp.y;
+
+            sprite.set_position(x_pos, y_pos);
+            sprite.draw(context.transform, g);
+        }
+    }
+}
+
+fn load_sprite(
+    window: &mut PistonWindow,
+    folder: &std::path::PathBuf,
+    file: &str,
+) -> Sprite<G2dTexture> {
+    let texture = Texture::from_path(
+        &mut window.factory,
+        folder.join(file),
+        Flip::None,
+        &TextureSettings::new(),
+    ).unwrap();
+    Sprite::from_texture(Rc::new(texture))
+}
+
 fn main() {
-    let (width, height) = (600, 600);
+    let (width, height) = (1280, 720);
+    let centre = Point::new(width as f64 / 2.0, height as f64 / 2.0);
     let opengl = OpenGL::V3_2;
-    let mut window: PistonWindow =
-        WindowSettings::new("Iron Sky", (width, height))
+    let mut window: PistonWindow = WindowSettings::new("Iron Sky", (width, height))
         .exit_on_esc(true)
         .opengl(opengl)
         .build()
         .unwrap();
 
     let assets = find_folder::Search::ParentsThenKids(3, 3)
-        .for_folder("assets").unwrap();
+        .for_folder("assets")
+        .unwrap();
 
-    let player = Rc::new(Texture::from_path(
-            &mut window.factory,
-            assets.join("player.png"),
-            Flip::None,
-            &TextureSettings::new()
-        ).unwrap());
-    let player_left = Rc::new(Texture::from_path(
-            &mut window.factory,
-            assets.join("playerLeft.png"),
-            Flip::None,
-            &TextureSettings::new()
-        ).unwrap());
-    let player_right = Rc::new(Texture::from_path(
-            &mut window.factory,
-            assets.join("playerRight.png"),
-            Flip::None,
-            &TextureSettings::new()
-        ).unwrap());
-    let missile = Rc::new(Texture::from_path(
-            &mut window.factory,
-            assets.join("missile.png"),
-            Flip::None,
-            &TextureSettings::new()
-        ).unwrap());
-
-    let mut spr_player = Sprite::from_texture(player.clone());
-    spr_player.set_position(width as f64 / 2.0, height as f64 / 2.0);
+    let mut spr_player = load_sprite(&mut window, &assets, "player.png");
+    spr_player.set_position(centre.x, centre.y);
     spr_player.set_scale(0.8 as f64, 0.8 as f64);
 
-    let mut spr_player_left = Sprite::from_texture(player_left.clone());
-    spr_player_left.set_position(width as f64 / 2.0, height as f64 / 2.0);
+    let mut spr_player_left = load_sprite(&mut window, &assets, "playerLeft.png");
+    spr_player_left.set_position(centre.x, centre.y);
     spr_player_left.set_scale(0.8 as f64, 0.8 as f64);
 
-    let mut spr_player_right = Sprite::from_texture(player_right.clone());
-    spr_player_right.set_position(width as f64 / 2.0, height as f64 / 2.0);
+    let mut spr_player_right = load_sprite(&mut window, &assets, "playerRight.png");
+    spr_player_right.set_position(centre.x, centre.y);
     spr_player_right.set_scale(0.8 as f64, 0.8 as f64);
 
-    let mut spr_missile = Sprite::from_texture(missile.clone());
+    let mut spr_missile = load_sprite(&mut window, &assets, "missile.png");
 
     let mut player_action = Actions::NoMove;
-    let mut player = Player::new(width as f64 / 2.0, height as f64 / 2.0);
+    let mut player = Player::new(centre);
 
     let mut left_key = KeyState::NotPressed;
     let mut right_key = KeyState::NotPressed;
 
-    let mut missile = Missile::new(Point::new(0.0, 0.0), Point::new(100.0, 0.0));
+    let mut missile = Missile::new(
+        Point::new(width as f64 / 2.0, height as f64),
+        Point::new(0.0, -100.0),
+    );
+
+    // Backgrounds
+    let mut bg_0 = load_sprite(&mut window, &assets, "bkgd_0.png");
+    // bg_0.set_scale(2.0, 2.0);
+    let clamp_0 = bg_0.bounding_box();
+    let clamp_0 = Point::new(clamp_0[2], clamp_0[3]);
+    let mut scroll_bg_0 = ScrollingBG::new(clamp_0, 0.0);
+
+    let mut bg_1 = load_sprite(&mut window, &assets, "bkgd_1.png");
+    // bg_1.set_scale(2.0, 2.0);
+    let clamp_1 = bg_1.bounding_box();
+    let clamp_1 = Point::new(clamp_1[2], clamp_1[3]);
+    let mut scroll_bg_1 = ScrollingBG::new(clamp_1, 0.01);
+
+    let mut bg_2 = load_sprite(&mut window, &assets, "bkgd_2.png");
+    // bg_2.set_scale(2.0, 2.0);
+    let clamp_2 = bg_2.bounding_box();
+    let clamp_2 = Point::new(clamp_2[2], clamp_2[3]);
+    let mut scroll_bg_2 = ScrollingBG::new(clamp_2, 0.05);
+
+    let mut bg_3 = load_sprite(&mut window, &assets, "bkgd_3.png");
+    // bg_3.set_scale(2.0, 2.0);
+    let clamp_3 = bg_3.bounding_box();
+    let clamp_3 = Point::new(clamp_3[2], clamp_3[3]);
+    let mut scroll_bg_3 = ScrollingBG::new(clamp_3, 0.07);
+
+    let mut bg_4 = load_sprite(&mut window, &assets, "bkgd_4.png");
+    // bg_4.set_scale(2.0, 2.0);
+    let clamp_4 = bg_4.bounding_box();
+    let clamp_4 = Point::new(clamp_4[2], clamp_4[3]);
+    let mut scroll_bg_4 = ScrollingBG::new(clamp_4, 0.1);
+
+    let mut bg_7 = load_sprite(&mut window, &assets, "bkgd_7.png");
+    // bg_7.set_scale(2.0, 2.0);
+    let clamp_7 = bg_7.bounding_box();
+    let clamp_7 = Point::new(clamp_7[2], clamp_7[3]);
+    let mut scroll_bg_7 = ScrollingBG::new(clamp_7, 1.0);
 
     while let Some(e) = window.next() {
         // Render
         window.draw_2d(&e, |c, g| {
             clear([1.0; 4], g); // Clear to white
 
+            // Draw background
+            draw_tiled_backgound(height, width, &mut bg_0, &scroll_bg_0, c, g);
+            draw_tiled_backgound(height, width, &mut bg_1, &scroll_bg_1, c, g);
+            draw_tiled_backgound(height, width, &mut bg_2, &scroll_bg_2, c, g);
+            draw_tiled_backgound(height, width, &mut bg_3, &scroll_bg_3, c, g);
+            draw_tiled_backgound(height, width, &mut bg_4, &scroll_bg_4, c, g);
+            draw_tiled_backgound(height, width, &mut bg_7, &scroll_bg_7, c, g);
+
             // Draw player sprite
             match player_action {
                 Actions::Left => {
                     spr_player_left.set_rotation(player.rot);
                     spr_player_left.draw(c.transform, g);
-                },
+                }
                 Actions::Right => {
                     spr_player_right.set_rotation(player.rot);
                     spr_player_right.draw(c.transform, g);
@@ -216,7 +341,7 @@ fn main() {
 
             // Draw missile sprite
             spr_missile.set_position(missile.pos.x, missile.pos.y);
-            spr_missile.set_rotation(missile.velocity.y.atan2(missile.velocity.x).to_degrees() + 90.0);
+            spr_missile.set_rotation(missile.velocity.y.atan2(missile.velocity.x).to_degrees());
             spr_missile.draw(c.transform, g);
         });
 
@@ -246,8 +371,34 @@ fn main() {
             player.update(player_action, u.dt);
 
             // Update missile
-            missile.update(player.pos, u.dt);
+            missile.update(&player, u.dt);
+
+            // Update background position
+            scroll_bg_0.update(&player, u.dt);
+            scroll_bg_1.update(&player, u.dt);
+            scroll_bg_2.update(&player, u.dt);
+            scroll_bg_3.update(&player, u.dt);
+            scroll_bg_4.update(&player, u.dt);
+            scroll_bg_7.update(&player, u.dt);
         }
     }
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn it_should_detect_collision() {
+        let collider_1 = Collider::new(0.0, 0.0, 1.0);
+        let collider_2 = Collider::new(1.2, 1.2, 1.0);
+        assert_eq!(collider_1.collides_with(&collider_2), true);
+    }
+
+    #[test]
+    fn it_should_not_detect_collision() {
+        let collider_1 = Collider::new(0.0, 0.0, 1.0);
+        let collider_2 = Collider::new(-2.0, -2.0, 1.0);
+        assert_eq!(collider_1.collides_with(&collider_2), false);
+    }
+}
