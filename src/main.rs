@@ -99,14 +99,11 @@ struct Collider {
 }
 
 impl Collider {
-    fn new(x: f64, y: f64, r: f64) -> Collider {
+    fn new(pos: Point, r: f64) -> Collider {
         if r <= 0.0 {
             panic!("Radius of collider must be greater than 0");
         }
-        Collider {
-            pos: Point::new(x, y),
-            r: r,
-        }
+        Collider { pos: pos, r: r }
     }
 
     fn collides_with(&self, other: &Collider) -> bool {
@@ -117,15 +114,18 @@ impl Collider {
 }
 
 struct Player {
-    pos: Point,
+    collider: Collider,
     rot: f64,
 }
 
 impl Player {
     const SPEED: f64 = 800.0;
 
-    fn new(pos: Point) -> Player {
-        Player { pos: pos, rot: 0.0 }
+    fn new(collider: Collider) -> Player {
+        Player {
+            collider: collider,
+            rot: 0.0,
+        }
     }
 
     fn update(&mut self, action: Actions, dt: f64) {
@@ -139,7 +139,7 @@ impl Player {
 }
 
 struct Missile {
-    pos: Point,
+    collider: Collider,
     velocity: Point,
 }
 
@@ -147,27 +147,27 @@ impl Missile {
     const MAX_SPEED: f64 = 1200.0;
     const ACCELERATION: f64 = 3000.0;
 
-    fn new(pos: Point, velocity: Point) -> Missile {
+    fn new(collider: Collider, velocity: Point) -> Missile {
         Missile {
-            pos: pos,
+            collider: collider,
             velocity: velocity,
         }
     }
 
     fn update(&mut self, player: &Player, dt: f64) {
         // Update position (x = x + v*dt)
-        self.pos = self.pos + self.velocity * dt;
+        self.collider.pos = self.collider.pos + self.velocity * dt;
 
         // Update velocity and cap (v = v + a*dt)
-        self.velocity =
-            self.velocity + (player.pos - self.pos).normalized() * Missile::ACCELERATION * dt;
+        self.velocity = self.velocity
+            + (player.collider.pos - self.collider.pos).normalized() * Missile::ACCELERATION * dt;
         if self.velocity.magnitude() >= Missile::MAX_SPEED {
             self.velocity = self.velocity.normalized() * Missile::MAX_SPEED;
         }
 
         // Update position based off player movement
         let player_dir = Point::new(player.rot.to_radians().cos(), player.rot.to_radians().sin());
-        self.pos = self.pos - player_dir * Player::SPEED * dt;
+        self.collider.pos = self.collider.pos - player_dir * Player::SPEED * dt;
     }
 }
 
@@ -263,13 +263,13 @@ fn main() {
     let mut spr_missile = load_sprite(&mut window, &assets, "missile.png");
 
     let mut player_action = Actions::NoMove;
-    let mut player = Player::new(centre);
+    let mut player = Player::new(Collider::new(centre, 50.0));
 
     let mut left_key = KeyState::NotPressed;
     let mut right_key = KeyState::NotPressed;
 
     let mut missile = Missile::new(
-        Point::new(width as f64 / 2.0, height as f64),
+        Collider::new(Point::new(width as f64 / 2.0, height as f64), 10.0),
         Point::new(0.0, -100.0),
     );
 
@@ -340,7 +340,7 @@ fn main() {
             }
 
             // Draw missile sprite
-            spr_missile.set_position(missile.pos.x, missile.pos.y);
+            spr_missile.set_position(missile.collider.pos.x, missile.collider.pos.y);
             spr_missile.set_rotation(missile.velocity.y.atan2(missile.velocity.x).to_degrees());
             spr_missile.draw(c.transform, g);
         });
@@ -380,6 +380,11 @@ fn main() {
             scroll_bg_3.update(&player, u.dt);
             scroll_bg_4.update(&player, u.dt);
             scroll_bg_7.update(&player, u.dt);
+
+            // Display on command line if missile and player are colliding
+            if player.collider.collides_with(&missile.collider) {
+                println!("The player is colliding!!!")
+            }
         }
     }
 }
@@ -390,15 +395,15 @@ mod tests {
 
     #[test]
     fn it_should_detect_collision() {
-        let collider_1 = Collider::new(0.0, 0.0, 1.0);
-        let collider_2 = Collider::new(1.2, 1.2, 1.0);
+        let collider_1 = Collider::new(Point::new(0.0, 0.0), 1.0);
+        let collider_2 = Collider::new(Point::new(1.2, 1.2), 1.0);
         assert_eq!(collider_1.collides_with(&collider_2), true);
     }
 
     #[test]
     fn it_should_not_detect_collision() {
-        let collider_1 = Collider::new(0.0, 0.0, 1.0);
-        let collider_2 = Collider::new(-2.0, -2.0, 1.0);
+        let collider_1 = Collider::new(Point::new(0.0, 0.0), 1.0);
+        let collider_2 = Collider::new(Point::new(-2.0, -2.0), 1.0);
         assert_eq!(collider_1.collides_with(&collider_2), false);
     }
 }
