@@ -4,10 +4,12 @@ extern crate sprite;
 
 mod background;
 mod game;
+mod player;
 
 use background::*;
 use game::*;
 use piston_window::*;
+use player::*;
 
 fn main() {
     let (width, height) = (1280, 720);

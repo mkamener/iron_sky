@@ -2,6 +2,7 @@ extern crate piston_window;
 
 use game::*;
 use piston_window::*;
+use player::*;
 use sprite::*;
 
 pub struct Background(Vec<BGLayer>);
