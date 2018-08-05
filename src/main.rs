@@ -87,7 +87,7 @@ fn main() {
     let mut right_key = KeyState::NotPressed;
 
     while let Some(e) = window.next() {
-        // Render
+        // Render loop
         window.draw_2d(&e, |c, g| {
             clear([1.0; 4], g); // Clear to white
 
@@ -102,7 +102,7 @@ fn main() {
             }
         });
 
-        // Check for keyboard input
+        // Input loop
         match e.press_args() {
             Some(Button::Keyboard(Key::Left)) => left_key = KeyState::Pressed,
             Some(Button::Keyboard(Key::Right)) => right_key = KeyState::Pressed,
@@ -124,14 +124,10 @@ fn main() {
         // Set player action based on key presses
         player.input(left_key, right_key);
 
+        // Update loop
         if let Some(u) = e.update_args() {
-            // Update player
             player.update(u.dt);
-
-            // Update missile
             missile.update(&player, u.dt);
-
-            // Update background position
             background.update(&player, u.dt);
         }
     }
