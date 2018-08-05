@@ -4,10 +4,12 @@ extern crate sprite;
 
 mod background;
 mod game;
+mod missile;
 mod player;
 
 use background::*;
 use game::*;
+use missile::*;
 use piston_window::*;
 use player::*;
 
