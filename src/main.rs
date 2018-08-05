@@ -28,8 +28,6 @@ fn main() {
         .for_folder("assets")
         .unwrap();
 
-    let draw_debug = true;
-
     let mut spr_player = load_sprite(&mut window, &assets, "player.png");
     spr_player.set_position(centre.x, centre.y);
     spr_player.set_scale(0.8 as f64, 0.8 as f64);
@@ -115,7 +113,7 @@ fn main() {
             missile2.draw(&mut spr_missile2, c, g);
 
             // Draw debug shapes if requested
-            if draw_debug {
+            if settings::game::DRAW_DEBUG {
                 player.collider.draw_debug(c, g);
                 missile1.collider.draw_debug(c, g);
                 missile2.collider.draw_debug(c, g);
