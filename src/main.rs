@@ -43,11 +43,22 @@ fn main() {
 
     let mut spr_missile = load_sprite(&mut window, &assets, "missile.png");
 
-    let mut player_action = Actions::NoMove;
-    let mut player = Player::new(Collider::new(centre, 35.0));
+    let player_explosion = Animation::new(
+        &mut window,
+        &assets,
+        "explosions/2.png",
+        centre,
+        8,
+        8,
+        1.0,
+        1.5,
+    );
 
-    let mut left_key = KeyState::NotPressed;
-    let mut right_key = KeyState::NotPressed;
+    let mut player = Player::new(
+        Collider::new(centre, 35.0),
+        [spr_player_left, spr_player, spr_player_right],
+        player_explosion,
+    );
 
     let missile_explosion = Animation::new(
         &mut window,
@@ -66,17 +77,6 @@ fn main() {
         missile_explosion,
     );
 
-    let mut player_explosion = Animation::new(
-        &mut window,
-        &assets,
-        "explosions/2.png",
-        centre,
-        8,
-        8,
-        1.0,
-        1.5,
-    );
-
     let bg_files = vec![
         ("bkgd_0.png", 0.0),
         ("bkgd_1.png", 0.01),
@@ -89,31 +89,16 @@ fn main() {
     ];
     let mut background = Background::new(&mut window, &assets, bg_files);
 
+    let mut left_key = KeyState::NotPressed;
+    let mut right_key = KeyState::NotPressed;
+
     while let Some(e) = window.next() {
         // Render
         window.draw_2d(&e, |c, g| {
             clear([1.0; 4], g); // Clear to white
 
-            // Draw background
             background.draw(height, width, c, g);
-
-            // Draw player sprite
-            match player_action {
-                Actions::Left => {
-                    spr_player_left.set_rotation(player.rot);
-                    spr_player_left.draw(c.transform, g);
-                }
-                Actions::Right => {
-                    spr_player_right.set_rotation(player.rot);
-                    spr_player_right.draw(c.transform, g);
-                }
-                Actions::NoMove => {
-                    spr_player.set_rotation(player.rot);
-                    spr_player.draw(c.transform, g);
-                }
-            }
-            player_explosion.draw(c, g);
-
+            player.draw(c, g);
             missile.draw(&mut spr_missile, c, g);
 
             // Draw debug shapes if requested
@@ -127,11 +112,12 @@ fn main() {
         match e.press_args() {
             Some(Button::Keyboard(Key::Left)) => left_key = KeyState::Pressed,
             Some(Button::Keyboard(Key::Right)) => right_key = KeyState::Pressed,
-            Some(Button::Keyboard(Key::E)) => player_explosion.play(),
+            Some(Button::Keyboard(Key::E)) => player.explode(),
             Some(Button::Keyboard(Key::W)) => missile.explode(),
             Some(Button::Keyboard(Key::Q)) => {
                 missile.reset(Point::new(0.0, 0.0), Point::new(0.0, 0.0))
             }
+            Some(Button::Keyboard(Key::R)) => player.reset(),
             _ => (),
         }
 
@@ -142,25 +128,17 @@ fn main() {
         }
 
         // Set player action based on key presses
-        match (left_key, right_key) {
-            (KeyState::Pressed, KeyState::Pressed) => player_action = Actions::NoMove,
-            (KeyState::Pressed, KeyState::NotPressed) => player_action = Actions::Left,
-            (KeyState::NotPressed, KeyState::Pressed) => player_action = Actions::Right,
-            (KeyState::NotPressed, KeyState::NotPressed) => player_action = Actions::NoMove,
-        }
+        player.input(left_key, right_key);
 
         if let Some(u) = e.update_args() {
             // Update player
-            player.update(player_action, u.dt);
+            player.update(u.dt);
 
             // Update missile
             missile.update(&player, u.dt);
 
             // Update background position
             background.update(&player, u.dt);
-
-            // Render update
-            player_explosion.update(u.dt);
         }
     }
 }

@@ -36,7 +36,9 @@ impl Missile {
         match self.state {
             State::Active => {
                 self.update_position(player, dt);
-                self.update_velocity(player, dt);
+                if player.is_active() {
+                    self.update_velocity(player, dt);
+                }
             }
             State::Exploding => {
                 self.update_position(player, dt);
@@ -79,6 +81,7 @@ impl Missile {
         self.collider.pos = pos;
         self.velocity = velocity;
         self.state = State::Active;
+        self.explosion.stop();
     }
 
     fn update_position(&mut self, player: &Player, dt: f64) -> () {

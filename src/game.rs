@@ -5,13 +5,6 @@ use sprite::*;
 use std::ops::{Add, Div, Mul, Sub};
 
 #[derive(Copy, Clone)]
-pub enum Actions {
-    NoMove,
-    Left,
-    Right,
-}
-
-#[derive(Copy, Clone)]
 pub enum KeyState {
     Pressed,
     NotPressed,
