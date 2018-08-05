@@ -124,17 +124,15 @@ fn main() {
 
         // Input loop
         let (prev_left_key, prev_right_key) = (left_key, right_key);
-        if let Some(p) = e.press_args() {
-            match p {
-                Button::Keyboard(Key::Left) => left_key = KeyState::Pressed,
-                Button::Keyboard(Key::Right) => right_key = KeyState::Pressed,
-                Button::Keyboard(Key::R) => {
-                    player.reset();
-                    missile1.reset(Point::new(width as f64 / 2.0, 0.0), Point::new(1000.0, 0.0));
-                    missile2.reset(Point::new(0.0, 0.0), Point::new(0.0, 0.0));
-                }
-                _ => (),
+        match e.press_args() {
+            Some(Button::Keyboard(Key::Left)) => left_key = KeyState::Pressed,
+            Some(Button::Keyboard(Key::Right)) => right_key = KeyState::Pressed,
+            Some(Button::Keyboard(Key::R)) => {
+                player.reset();
+                missile1.reset(Point::new(width as f64 / 2.0, 0.0), Point::new(1000.0, 0.0));
+                missile2.reset(Point::new(0.0, 0.0), Point::new(0.0, 0.0));
             }
+            _ => (),
         }
 
         match e.release_args() {
