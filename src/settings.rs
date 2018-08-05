@@ -11,7 +11,7 @@ pub mod player {
     pub const SPEED: f64 = 800.0;
 
     // Collider
-    pub const COLLIDER_RADIUS: f64 = 35.0;
+    pub const COLLIDER_RADIUS: f64 = 30.0;
 
     // Explosion Settings
     pub const EXPLOSION_LENGTH: f64 = 1.0;
@@ -23,7 +23,7 @@ pub mod missile {
     pub const ACCELERATION: f64 = 3000.0;
 
     // Collider
-    pub const COLLIDER_RADIUS: f64 = 15.0;
+    pub const COLLIDER_RADIUS: f64 = 20.0;
 
     // Explosion Settings
     pub const EXPLOSION_LENGTH: f64 = 0.5;

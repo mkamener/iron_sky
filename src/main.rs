@@ -124,21 +124,25 @@ fn main() {
 
         // Input loop
         let (prev_left_key, prev_right_key) = (left_key, right_key);
-        match e.press_args() {
-            Some(Button::Keyboard(Key::Left)) => left_key = KeyState::Pressed,
-            Some(Button::Keyboard(Key::Right)) => right_key = KeyState::Pressed,
-            Some(Button::Keyboard(Key::R)) => {
-                player.reset();
-                missile1.reset(Point::new(width as f64 / 2.0, 0.0), Point::new(1000.0, 0.0));
-                missile2.reset(Point::new(0.0, 0.0), Point::new(0.0, 0.0));
+        if let Some(press_args) = e.press_args() {
+            match press_args {
+                Button::Keyboard(Key::Left) => left_key = KeyState::Pressed,
+                Button::Keyboard(Key::Right) => right_key = KeyState::Pressed,
+                Button::Keyboard(Key::R) => {
+                    player.reset();
+                    missile1.reset(Point::new(width as f64 / 2.0, 0.0), Point::new(1000.0, 0.0));
+                    missile2.reset(Point::new(0.0, 0.0), Point::new(0.0, 0.0));
+                }
+                _ => (),
             }
-            _ => (),
         }
 
-        match e.release_args() {
-            Some(Button::Keyboard(Key::Left)) => left_key = KeyState::NotPressed,
-            Some(Button::Keyboard(Key::Right)) => right_key = KeyState::NotPressed,
-            _ => (),
+        if let Some(release_args) = e.release_args() {
+            match release_args {
+                Button::Keyboard(Key::Left) => left_key = KeyState::NotPressed,
+                Button::Keyboard(Key::Right) => right_key = KeyState::NotPressed,
+                _ => (),
+            }
         }
 
         // Set player action based on key presses
