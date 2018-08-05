@@ -59,6 +59,12 @@ fn main() {
         player_explosion,
     );
 
+    let missile1_pos = Point::new(width as f64 / 2.0, 0.0);
+    let missile1_vel = Point::new(-500.0, 1000.0);
+
+    let missile2_pos = Point::new(0.0, height as f64 / 2.0);
+    let missile2_vel = Point::new(1000.0, 0.0);
+
     let mut spr_missile1 = load_sprite(&mut window, &assets, "missile.png");
     let mut spr_missile2 = load_sprite(&mut window, &assets, "missile.png");
 
@@ -85,17 +91,14 @@ fn main() {
     );
 
     let mut missile1 = Missile::new(
-        Collider::new(Point::new(0.0, 0.0), settings::missile::COLLIDER_RADIUS),
-        Point::new(0.0, 1000.0),
+        Collider::new(missile1_pos, settings::missile::COLLIDER_RADIUS),
+        missile1_vel,
         missile_explosion1,
     );
 
     let mut missile2 = Missile::new(
-        Collider::new(
-            Point::new(width as f64 / 2.0, height as f64),
-            settings::missile::COLLIDER_RADIUS,
-        ),
-        Point::new(0.0, -100.0),
+        Collider::new(missile2_pos, settings::missile::COLLIDER_RADIUS),
+        missile2_vel,
         missile_explosion2,
     );
 
@@ -123,15 +126,14 @@ fn main() {
         });
 
         // Input loop
-        // let (prev_left_key, prev_right_key) = (left_key, right_key);
         if let Some(press_args) = e.press_args() {
             match press_args {
                 Button::Keyboard(Key::Left) => left_key = KeyState::Pressed,
                 Button::Keyboard(Key::Right) => right_key = KeyState::Pressed,
                 Button::Keyboard(Key::R) => {
                     player.reset();
-                    missile1.reset(Point::new(width as f64 / 2.0, 0.0), Point::new(1000.0, 0.0));
-                    missile2.reset(Point::new(0.0, 0.0), Point::new(0.0, 0.0));
+                    missile1.reset(missile1_pos, missile1_vel);
+                    missile2.reset(missile2_pos, missile2_vel);
                 }
                 _ => (),
             }
@@ -146,10 +148,6 @@ fn main() {
             }
             player.input(left_key, right_key);
         }
-
-        // Set player action based on key presses
-        // if prev_left_key != left_key || prev_right_key != right_key {
-        // }
 
         // Update loop
         if let Some(u) = e.update_args() {
