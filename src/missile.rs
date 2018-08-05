@@ -39,8 +39,7 @@ impl Missile {
         }
 
         // Update position based off player movement
-        let player_dir = Point::new(player.rot.to_radians().cos(), player.rot.to_radians().sin());
-        self.collider.pos = self.collider.pos - player_dir * Player::SPEED * dt;
+        self.collider.pos = self.collider.pos - player.velocity() * dt;
 
         // Update explosion
         self.explosion.update(dt);

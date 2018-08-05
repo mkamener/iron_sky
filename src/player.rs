@@ -23,4 +23,8 @@ impl Player {
             Actions::NoMove => (),
         }
     }
+
+    pub fn velocity(&self) -> Point {
+        Point::new(self.rot.to_radians().cos(), self.rot.to_radians().sin()) * Player::SPEED
+    }
 }

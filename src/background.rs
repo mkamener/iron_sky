@@ -59,8 +59,7 @@ impl BGLayer {
 
     fn update(&mut self, player: &Player, dt: f64) {
         // Update position based off player movement
-        let player_dir = Point::new(player.rot.to_radians().cos(), player.rot.to_radians().sin());
-        self.pos = self.pos - player_dir * Player::SPEED * dt * self.factor;
+        self.pos = self.pos - player.velocity() * dt * self.factor;
 
         // Clamp position to bounding box
         let new_x = ((self.pos.x % self.clamp.x) + self.clamp.x) % self.clamp.x;
