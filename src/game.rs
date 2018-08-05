@@ -82,7 +82,14 @@ impl Point {
     }
 }
 
+#[derive(Copy, Clone)]
+enum ColliderState {
+    Enabled,
+    Disabled,
+}
+
 pub struct Collider {
+    state: ColliderState,
     pub pos: Point,
     r: f64,
 }
@@ -92,23 +99,46 @@ impl Collider {
         if r <= 0.0 {
             panic!("Radius of collider must be greater than 0");
         }
-        Collider { pos: pos, r: r }
+        Collider {
+            state: ColliderState::Enabled,
+            pos: pos,
+            r: r,
+        }
     }
 
     pub fn collides_with(&self, other: &Collider) -> bool {
-        let min_distance = self.r + other.r;
-        let distance = (self.pos - other.pos).magnitude();
-        distance < min_distance
+        match (self.state, other.state) {
+            (ColliderState::Enabled, ColliderState::Enabled) => {
+                let min_distance = self.r + other.r;
+                let distance = (self.pos - other.pos).magnitude();
+                distance < min_distance
+            }
+            (ColliderState::Disabled, _) => false,
+            (_, ColliderState::Disabled) => false,
+        }
     }
 
     pub fn draw_debug(&self, c: piston_window::Context, g: &mut G2d) -> () {
-        let rect = [
-            self.pos.x - self.r,
-            self.pos.y - self.r,
-            self.r * 2.0,
-            self.r * 2.0,
-        ];
-        ellipse([1.0, 0.0, 0.0, 0.5], rect, c.transform, g);
+        match self.state {
+            ColliderState::Enabled => {
+                let rect = [
+                    self.pos.x - self.r,
+                    self.pos.y - self.r,
+                    self.r * 2.0,
+                    self.r * 2.0,
+                ];
+                ellipse([1.0, 0.0, 0.0, 0.5], rect, c.transform, g);
+            }
+            ColliderState::Disabled => {}
+        }
+    }
+
+    pub fn enable(&mut self) -> () {
+        self.state = ColliderState::Enabled;
+    }
+
+    pub fn disable(&mut self) -> () {
+        self.state = ColliderState::Disabled;
     }
 }
 

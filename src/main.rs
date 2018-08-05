@@ -28,7 +28,7 @@ fn main() {
         .for_folder("assets")
         .unwrap();
 
-    let draw_debug = false;
+    let draw_debug = true;
 
     let mut spr_player = load_sprite(&mut window, &assets, "player.png");
     spr_player.set_position(centre.x, centre.y);
@@ -41,8 +41,6 @@ fn main() {
     let mut spr_player_right = load_sprite(&mut window, &assets, "playerRight.png");
     spr_player_right.set_position(centre.x, centre.y);
     spr_player_right.set_scale(0.8 as f64, 0.8 as f64);
-
-    let mut spr_missile = load_sprite(&mut window, &assets, "missile.png");
 
     let player_explosion = Animation::new(
         &mut window,
@@ -61,7 +59,21 @@ fn main() {
         player_explosion,
     );
 
-    let missile_explosion = Animation::new(
+    let mut spr_missile1 = load_sprite(&mut window, &assets, "missile.png");
+    let mut spr_missile2 = load_sprite(&mut window, &assets, "missile.png");
+
+    let missile_explosion1 = Animation::new(
+        &mut window,
+        &assets,
+        "explosions/3.png",
+        centre,
+        8,
+        8,
+        settings::missile::EXPLOSION_LENGTH,
+        settings::missile::EXPLOSION_ZOOM,
+    );
+
+    let missile_explosion2 = Animation::new(
         &mut window,
         &assets,
         "explosions/4.png",
@@ -72,13 +84,19 @@ fn main() {
         settings::missile::EXPLOSION_ZOOM,
     );
 
-    let mut missile = Missile::new(
+    let mut missile1 = Missile::new(
+        Collider::new(Point::new(0.0, 0.0), settings::missile::COLLIDER_RADIUS),
+        Point::new(0.0, 1000.0),
+        missile_explosion1,
+    );
+
+    let mut missile2 = Missile::new(
         Collider::new(
             Point::new(width as f64 / 2.0, height as f64),
             settings::missile::COLLIDER_RADIUS,
         ),
         Point::new(0.0, -100.0),
-        missile_explosion,
+        missile_explosion2,
     );
 
     let mut background = Background::new(&mut window, &assets, settings::background::FILES);
@@ -93,12 +111,14 @@ fn main() {
 
             background.draw(height, width, c, g);
             player.draw(c, g);
-            missile.draw(&mut spr_missile, c, g);
+            missile1.draw(&mut spr_missile1, c, g);
+            missile2.draw(&mut spr_missile2, c, g);
 
             // Draw debug shapes if requested
             if draw_debug {
                 player.collider.draw_debug(c, g);
-                missile.collider.draw_debug(c, g);
+                missile1.collider.draw_debug(c, g);
+                missile2.collider.draw_debug(c, g);
             }
         });
 
@@ -106,12 +126,11 @@ fn main() {
         match e.press_args() {
             Some(Button::Keyboard(Key::Left)) => left_key = KeyState::Pressed,
             Some(Button::Keyboard(Key::Right)) => right_key = KeyState::Pressed,
-            Some(Button::Keyboard(Key::E)) => player.explode(),
-            Some(Button::Keyboard(Key::W)) => missile.explode(),
-            Some(Button::Keyboard(Key::Q)) => {
-                missile.reset(Point::new(0.0, 0.0), Point::new(0.0, 0.0))
+            Some(Button::Keyboard(Key::R)) => {
+                player.reset();
+                missile1.reset(Point::new(width as f64 / 2.0, 0.0), Point::new(1000.0, 0.0));
+                missile2.reset(Point::new(0.0, 0.0), Point::new(0.0, 0.0));
             }
-            Some(Button::Keyboard(Key::R)) => player.reset(),
             _ => (),
         }
 
@@ -127,8 +146,37 @@ fn main() {
         // Update loop
         if let Some(u) = e.update_args() {
             player.update(u.dt);
-            missile.update(&player, u.dt);
+            missile1.update(&player, u.dt);
+            missile2.update(&player, u.dt);
             background.update(&player, u.dt);
+
+            // Collisions
+            let mut coll_player = false;
+            let mut coll_missile1 = false;
+            let mut coll_missile2 = false;
+
+            if player.collider.collides_with(&missile1.collider) {
+                coll_player = true;
+                coll_missile1 = true;
+            }
+            if player.collider.collides_with(&missile2.collider) {
+                coll_player = true;
+                coll_missile2 = true;
+            }
+            if missile1.collider.collides_with(&missile2.collider) {
+                coll_missile1 = true;
+                coll_missile2 = true;
+            }
+
+            if coll_player {
+                player.explode();
+            }
+            if coll_missile1 {
+                missile1.explode();
+            }
+            if coll_missile2 {
+                missile2.explode();
+            }
         }
     }
 }

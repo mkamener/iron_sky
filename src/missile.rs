@@ -5,7 +5,7 @@ use piston_window::*;
 use player::*;
 use sprite::*;
 
-#[derive(PartialEq)]
+#[derive(Copy, Clone)]
 enum State {
     Active,
     Exploding,
@@ -68,9 +68,13 @@ impl Missile {
     }
 
     pub fn explode(&mut self) -> () {
-        if self.state == State::Active {
-            self.state = State::Exploding;
-            self.explosion.play();
+        match self.state {
+            State::Active => {
+                self.state = State::Exploding;
+                self.collider.disable();
+                self.explosion.play();
+            }
+            State::Exploding | State::Inactive => {}
         }
     }
 
@@ -78,6 +82,7 @@ impl Missile {
         self.collider.pos = pos;
         self.velocity = velocity;
         self.state = State::Active;
+        self.collider.enable();
         self.explosion.stop();
     }
 

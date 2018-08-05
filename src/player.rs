@@ -98,6 +98,7 @@ impl Player {
             State::Active(_) => {
                 self.state = State::Exploding;
                 self.explosion.play();
+                self.collider.disable();
             }
             State::Exploding | State::Inactive => {}
         }
@@ -106,6 +107,7 @@ impl Player {
     pub fn reset(&mut self) -> () {
         self.state = State::Active(Action::NoMove);
         self.rot = 0.0;
+        self.collider.enable();
         self.explosion.stop();
     }
 
