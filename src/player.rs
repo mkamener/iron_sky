@@ -27,8 +27,6 @@ pub struct Player {
 }
 
 impl Player {
-    const SPEED: f64 = 800.0;
-
     pub fn new(
         collider: Collider,
         sprites: [Sprite<G2dTexture>; 3],
@@ -112,7 +110,8 @@ impl Player {
     }
 
     pub fn velocity(&self) -> Point {
-        Point::new(self.rot.to_radians().cos(), self.rot.to_radians().sin()) * Player::SPEED
+        use settings::player;
+        Point::new(self.rot.to_radians().cos(), self.rot.to_radians().sin()) * player::SPEED
     }
 
     pub fn is_active(&self) -> bool {

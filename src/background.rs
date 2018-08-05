@@ -11,13 +11,13 @@ impl Background {
     pub fn new(
         window: &mut PistonWindow,
         folder: &::std::path::PathBuf,
-        names_and_factors: Vec<(&str, f64)>,
+        names_and_factors: &'static [(&str, f64)],
     ) -> Background {
         let mut all_bg: Vec<BGLayer> = vec![];
 
-        for (file, factor) in names_and_factors {
+        for (file, factor) in names_and_factors.iter() {
             let bg = load_sprite(window, folder, file);
-            all_bg.push(BGLayer::new(bg, factor));
+            all_bg.push(BGLayer::new(bg, *factor));
         }
 
         Background(all_bg)

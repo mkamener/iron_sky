@@ -6,6 +6,7 @@ mod background;
 mod game;
 mod missile;
 mod player;
+mod settings;
 
 use background::*;
 use game::*;
@@ -14,7 +15,7 @@ use piston_window::*;
 use player::*;
 
 fn main() {
-    let (width, height) = (1280, 720);
+    let (width, height) = settings::window::SIZE;
     let centre = Point::new(width as f64 / 2.0, height as f64 / 2.0);
     let opengl = OpenGL::V3_2;
     let mut window: PistonWindow = WindowSettings::new("Iron Sky", (width, height))
@@ -50,12 +51,12 @@ fn main() {
         centre,
         8,
         8,
-        1.0,
-        1.5,
+        settings::player::EXPLOSION_LENGTH,
+        settings::player::EXPLOSION_ZOOM,
     );
 
     let mut player = Player::new(
-        Collider::new(centre, 35.0),
+        Collider::new(centre, settings::player::COLLIDER_RADIUS),
         [spr_player_left, spr_player, spr_player_right],
         player_explosion,
     );
@@ -67,27 +68,20 @@ fn main() {
         centre,
         8,
         8,
-        0.5,
-        1.0,
+        settings::missile::EXPLOSION_LENGTH,
+        settings::missile::EXPLOSION_ZOOM,
     );
 
     let mut missile = Missile::new(
-        Collider::new(Point::new(width as f64 / 2.0, height as f64), 15.0),
+        Collider::new(
+            Point::new(width as f64 / 2.0, height as f64),
+            settings::missile::COLLIDER_RADIUS,
+        ),
         Point::new(0.0, -100.0),
         missile_explosion,
     );
 
-    let bg_files = vec![
-        ("bkgd_0.png", 0.0),
-        ("bkgd_1.png", 0.01),
-        ("bkgd_2.png", 0.02),
-        ("bkgd_3.png", 0.03),
-        ("bkgd_4.png", 0.04),
-        ("bkgd_5.png", 0.05),
-        ("bkgd_6.png", 0.5),
-        ("bkgd_7.png", 1.0),
-    ];
-    let mut background = Background::new(&mut window, &assets, bg_files);
+    let mut background = Background::new(&mut window, &assets, settings::background::FILES);
 
     let mut left_key = KeyState::NotPressed;
     let mut right_key = KeyState::NotPressed;

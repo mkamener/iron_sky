@@ -20,9 +20,6 @@ pub struct Missile {
 }
 
 impl Missile {
-    const MAX_SPEED: f64 = 1200.0;
-    const ACCELERATION: f64 = 3000.0;
-
     pub fn new(collider: Collider, velocity: Point, explosion: Animation) -> Missile {
         Missile {
             state: State::Active,
@@ -93,11 +90,12 @@ impl Missile {
     }
 
     fn update_velocity(&mut self, player: &Player, dt: f64) -> () {
+        use settings::missile;
         // Update velocity and cap (v = v + a*dt)
         self.velocity = self.velocity
-            + (player.collider.pos - self.collider.pos).normalized() * Missile::ACCELERATION * dt;
-        if self.velocity.magnitude() >= Missile::MAX_SPEED {
-            self.velocity = self.velocity.normalized() * Missile::MAX_SPEED;
+            + (player.collider.pos - self.collider.pos).normalized() * missile::ACCELERATION * dt;
+        if self.velocity.magnitude() >= missile::MAX_SPEED {
+            self.velocity = self.velocity.normalized() * missile::MAX_SPEED;
         }
     }
 
