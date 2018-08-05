@@ -2,8 +2,10 @@ extern crate find_folder;
 extern crate piston_window;
 extern crate sprite;
 
+mod background;
 mod game;
 
+use background::*;
 use game::*;
 use piston_window::*;
 
