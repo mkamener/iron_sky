@@ -224,12 +224,14 @@ impl Animation {
 
     pub fn play(&mut self) -> () {
         self.duration = 0.0;
+        self.frame_idx = 0;
         self.playing = true;
     }
 
     pub fn stop(&mut self) -> () {
         self.playing = false;
         self.duration = 0.0;
+        self.frame_idx = 0;
     }
 
     pub fn set_pos(&mut self, pos: Point) -> () {

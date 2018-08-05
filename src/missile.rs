@@ -73,6 +73,7 @@ impl Missile {
                 self.state = State::Exploding;
                 self.collider.disable();
                 self.explosion.play();
+                self.explosion.set_pos(self.collider.pos);
             }
             State::Exploding | State::Inactive => {}
         }

@@ -123,7 +123,7 @@ fn main() {
         });
 
         // Input loop
-        let (prev_left_key, prev_right_key) = (left_key, right_key);
+        // let (prev_left_key, prev_right_key) = (left_key, right_key);
         if let Some(press_args) = e.press_args() {
             match press_args {
                 Button::Keyboard(Key::Left) => left_key = KeyState::Pressed,
@@ -135,6 +135,7 @@ fn main() {
                 }
                 _ => (),
             }
+            player.input(left_key, right_key);
         }
 
         if let Some(release_args) = e.release_args() {
@@ -143,12 +144,12 @@ fn main() {
                 Button::Keyboard(Key::Right) => right_key = KeyState::NotPressed,
                 _ => (),
             }
+            player.input(left_key, right_key);
         }
 
         // Set player action based on key presses
-        if prev_left_key != left_key || prev_right_key != right_key {
-            player.input(left_key, right_key);
-        }
+        // if prev_left_key != left_key || prev_right_key != right_key {
+        // }
 
         // Update loop
         if let Some(u) = e.update_args() {
