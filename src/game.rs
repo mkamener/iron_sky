@@ -148,16 +148,18 @@ impl Player {
 pub struct Missile {
     pub collider: Collider,
     pub velocity: Point,
+    pub explosion: Animation,
 }
 
 impl Missile {
     const MAX_SPEED: f64 = 1200.0;
     const ACCELERATION: f64 = 3000.0;
 
-    pub fn new(collider: Collider, velocity: Point) -> Missile {
+    pub fn new(collider: Collider, velocity: Point, explosion: Animation) -> Missile {
         Missile {
             collider: collider,
             velocity: velocity,
+            explosion: explosion,
         }
     }
 
@@ -166,30 +168,57 @@ impl Missile {
         self.collider.pos = self.collider.pos + self.velocity * dt;
 
         // Update velocity and cap (v = v + a*dt)
-        self.velocity = self.velocity
-            + (player.collider.pos - self.collider.pos).normalized() * Missile::ACCELERATION * dt;
-        if self.velocity.magnitude() >= Missile::MAX_SPEED {
-            self.velocity = self.velocity.normalized() * Missile::MAX_SPEED;
+        if !self.explosion.playing {
+            self.velocity = self.velocity
+                + (player.collider.pos - self.collider.pos).normalized()
+                    * Missile::ACCELERATION
+                    * dt;
+            if self.velocity.magnitude() >= Missile::MAX_SPEED {
+                self.velocity = self.velocity.normalized() * Missile::MAX_SPEED;
+            }
         }
 
         // Update position based off player movement
         let player_dir = Point::new(player.rot.to_radians().cos(), player.rot.to_radians().sin());
         self.collider.pos = self.collider.pos - player_dir * Player::SPEED * dt;
+
+        // Update explosion
+        self.explosion.update(dt);
+        self.explosion.set_pos(self.collider.pos);
+    }
+
+    pub fn draw(
+        &self,
+        sprite: &mut Sprite<G2dTexture>,
+        c: piston_window::Context,
+        g: &mut G2d,
+    ) -> () {
+        match self.explosion.playing {
+            true => {
+                self.explosion.draw(c, g);
+            }
+            false => {
+                sprite.set_position(self.collider.pos.x, self.collider.pos.y);
+                sprite.set_rotation(self.velocity.y.atan2(self.velocity.x).to_degrees());
+                sprite.draw(c.transform, g);
+            }
+        }
+        // Draw missile sprite
     }
 }
 
-pub struct ScrollingBG {
+pub struct BGLayer {
     sprite: Sprite<G2dTexture>,
     pos: Point,
     clamp: Point,
     factor: f64,
 }
 
-impl ScrollingBG {
-    fn new(sprite: Sprite<G2dTexture>, factor: f64) -> ScrollingBG {
+impl BGLayer {
+    fn new(sprite: Sprite<G2dTexture>, factor: f64) -> BGLayer {
         let clamp = sprite.bounding_box();
         let clamp = Point::new(clamp[2], clamp[3]);
-        ScrollingBG {
+        BGLayer {
             sprite: sprite,
             pos: Point::new(0.0, 0.0),
             clamp: clamp,
@@ -230,7 +259,7 @@ impl ScrollingBG {
     }
 }
 
-pub struct Background(Vec<ScrollingBG>);
+pub struct Background(Vec<BGLayer>);
 
 impl Background {
     pub fn new(
@@ -238,11 +267,11 @@ impl Background {
         folder: &::std::path::PathBuf,
         names_and_factors: Vec<(&str, f64)>,
     ) -> Background {
-        let mut all_bg: Vec<ScrollingBG> = vec![];
+        let mut all_bg: Vec<BGLayer> = vec![];
 
         for (file, factor) in names_and_factors {
             let bg = load_sprite(window, folder, file);
-            all_bg.push(ScrollingBG::new(bg, factor));
+            all_bg.push(BGLayer::new(bg, factor));
         }
 
         Background(all_bg)
@@ -263,6 +292,101 @@ impl Background {
     }
 }
 
+pub struct Animation {
+    texture: G2dTexture,
+    frames: Vec<[f64; 4]>,
+    pos: Point,
+    frame_idx: usize,
+    length: f64,
+    duration: f64,
+    playing: bool,
+    zoom: f64,
+}
+
+impl Animation {
+    pub fn new(
+        window: &mut PistonWindow,
+        folder: &::std::path::PathBuf,
+        file: &str,
+        pos: Point,
+        rows: u32,
+        cols: u32,
+        length: f64,
+        zoom: f64,
+    ) -> Animation {
+        let mut frames = vec![];
+        let texture = load_texture(window, folder, file);
+        let (width, height) = texture.get_size();
+        let (spr_width, spr_height) = (width / cols, height / rows);
+
+        for y in 0..rows {
+            for x in 0..cols {
+                frames.push([
+                    (x * spr_width) as f64,
+                    (y * spr_height) as f64,
+                    spr_width as f64,
+                    spr_height as f64,
+                ]);
+            }
+        }
+        Animation {
+            texture: texture,
+            frames: frames,
+            pos: pos,
+            frame_idx: 0,
+            length: length,
+            duration: 0.0,
+            playing: false,
+            zoom: zoom,
+        }
+    }
+
+    pub fn draw(&self, c: piston_window::Context, g: &mut G2d) -> () {
+        if self.playing == false {
+            return;
+        };
+        let frame = self.frames[self.frame_idx];
+        Image::new().src_rect(frame).draw(
+            &self.texture,
+            &c.draw_state,
+            c.transform
+                .trans(
+                    -0.5 * self.zoom * frame[2] + self.pos.x,
+                    -0.5 * self.zoom * frame[3] + self.pos.y,
+                )
+                .zoom(self.zoom),
+            g,
+        );
+    }
+
+    pub fn update(&mut self, dt: f64) -> () {
+        if self.playing == false {
+            return;
+        };
+        self.duration = self.duration + dt;
+        let idx = ((self.duration / self.length) * (self.frames.len() as f64)).floor() as usize;
+        if idx < self.frames.len() {
+            self.frame_idx = idx;
+        } else {
+            self.stop();
+        }
+    }
+
+    pub fn play(&mut self) -> () {
+        self.duration = 0.0;
+        self.playing = true;
+    }
+
+    pub fn stop(&mut self) -> () {
+        self.playing = false;
+        self.duration = 0.0;
+    }
+
+    pub fn set_pos(&mut self, pos: Point) -> () {
+        self.pos = pos;
+    }
+}
+
 pub fn load_sprite(
     window: &mut PistonWindow,
     folder: &::std::path::PathBuf,
@@ -275,6 +399,19 @@ pub fn load_sprite(
         &TextureSettings::new(),
     ).unwrap();
     Sprite::from_texture(::std::rc::Rc::new(texture))
+}
+
+pub fn load_texture(
+    window: &mut PistonWindow,
+    folder: &::std::path::PathBuf,
+    file: &str,
+) -> G2dTexture {
+    Texture::from_path(
+        &mut window.factory,
+        folder.join(file),
+        Flip::None,
+        &TextureSettings::new(),
+    ).unwrap()
 }
 
 #[cfg(test)]

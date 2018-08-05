@@ -21,7 +21,7 @@ fn main() {
         .for_folder("assets")
         .unwrap();
 
-    let draw_debug = true;
+    let draw_debug = false;
 
     let mut spr_player = load_sprite(&mut window, &assets, "player.png");
     spr_player.set_position(centre.x, centre.y);
@@ -43,9 +43,32 @@ fn main() {
     let mut left_key = KeyState::NotPressed;
     let mut right_key = KeyState::NotPressed;
 
+    let missile_explosion = Animation::new(
+        &mut window,
+        &assets,
+        "explosions/4.png",
+        centre,
+        8,
+        8,
+        0.5,
+        1.0,
+    );
+
     let mut missile = Missile::new(
         Collider::new(Point::new(width as f64 / 2.0, height as f64), 15.0),
         Point::new(0.0, -100.0),
+        missile_explosion,
+    );
+
+    let mut player_explosion = Animation::new(
+        &mut window,
+        &assets,
+        "explosions/2.png",
+        centre,
+        8,
+        8,
+        1.0,
+        1.5,
     );
 
     let bg_files = vec![
@@ -83,11 +106,9 @@ fn main() {
                     spr_player.draw(c.transform, g);
                 }
             }
+            player_explosion.draw(c, g);
 
-            // Draw missile sprite
-            spr_missile.set_position(missile.collider.pos.x, missile.collider.pos.y);
-            spr_missile.set_rotation(missile.velocity.y.atan2(missile.velocity.x).to_degrees());
-            spr_missile.draw(c.transform, g);
+            missile.draw(&mut spr_missile, c, g);
 
             // Draw debug shapes if requested
             if draw_debug {
@@ -100,6 +121,8 @@ fn main() {
         match e.press_args() {
             Some(Button::Keyboard(Key::Left)) => left_key = KeyState::Pressed,
             Some(Button::Keyboard(Key::Right)) => right_key = KeyState::Pressed,
+            Some(Button::Keyboard(Key::E)) => player_explosion.play(),
+            Some(Button::Keyboard(Key::W)) => missile.explosion.play(),
             _ => (),
         }
 
@@ -126,6 +149,9 @@ fn main() {
 
             // Update background position
             background.update(&player, u.dt);
+
+            // Render update
+            player_explosion.update(u.dt);
         }
     }
 }
