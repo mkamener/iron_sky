@@ -4,7 +4,7 @@ use piston_window::*;
 use sprite::*;
 use std::ops::{Add, Div, Mul, Sub};
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, PartialEq)]
 pub enum KeyState {
     Pressed,
     NotPressed,

@@ -14,7 +14,7 @@ pub mod player {
     pub const COLLIDER_RADIUS: f64 = 35.0;
 
     // Explosion Settings
-    pub const EXPLOSION_LENGTH: f64 = 2.0;
+    pub const EXPLOSION_LENGTH: f64 = 1.0;
     pub const EXPLOSION_ZOOM: f64 = 1.5;
 }
 

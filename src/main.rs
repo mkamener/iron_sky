@@ -24,6 +24,8 @@ fn main() {
         .build()
         .unwrap();
 
+    // window.set_bench_mode(true);
+
     let assets = find_folder::Search::ParentsThenKids(3, 3)
         .for_folder("assets")
         .unwrap();
@@ -121,15 +123,18 @@ fn main() {
         });
 
         // Input loop
-        match e.press_args() {
-            Some(Button::Keyboard(Key::Left)) => left_key = KeyState::Pressed,
-            Some(Button::Keyboard(Key::Right)) => right_key = KeyState::Pressed,
-            Some(Button::Keyboard(Key::R)) => {
-                player.reset();
-                missile1.reset(Point::new(width as f64 / 2.0, 0.0), Point::new(1000.0, 0.0));
-                missile2.reset(Point::new(0.0, 0.0), Point::new(0.0, 0.0));
+        let (prev_left_key, prev_right_key) = (left_key, right_key);
+        if let Some(p) = e.press_args() {
+            match p {
+                Button::Keyboard(Key::Left) => left_key = KeyState::Pressed,
+                Button::Keyboard(Key::Right) => right_key = KeyState::Pressed,
+                Button::Keyboard(Key::R) => {
+                    player.reset();
+                    missile1.reset(Point::new(width as f64 / 2.0, 0.0), Point::new(1000.0, 0.0));
+                    missile2.reset(Point::new(0.0, 0.0), Point::new(0.0, 0.0));
+                }
+                _ => (),
             }
-            _ => (),
         }
 
         match e.release_args() {
@@ -139,7 +144,9 @@ fn main() {
         }
 
         // Set player action based on key presses
-        player.input(left_key, right_key);
+        if prev_left_key != left_key || prev_right_key != right_key {
+            player.input(left_key, right_key);
+        }
 
         // Update loop
         if let Some(u) = e.update_args() {
