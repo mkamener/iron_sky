@@ -23,11 +23,11 @@ pub struct Player {
     sprites: [Sprite<G2dTexture>; 3],
     pub collider: Collider,
     explosion: Animation,
-    pub rot: f64,
+    rot: f64,
 }
 
 impl Player {
-    pub const SPEED: f64 = 800.0;
+    const SPEED: f64 = 800.0;
 
     pub fn new(
         collider: Collider,

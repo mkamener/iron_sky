@@ -15,8 +15,8 @@ enum State {
 pub struct Missile {
     state: State,
     pub collider: Collider,
-    pub velocity: Point,
-    pub explosion: Animation,
+    velocity: Point,
+    explosion: Animation,
 }
 
 impl Missile {
