@@ -128,7 +128,10 @@ fn main() {
             Some(Button::Keyboard(Key::Left)) => left_key = KeyState::Pressed,
             Some(Button::Keyboard(Key::Right)) => right_key = KeyState::Pressed,
             Some(Button::Keyboard(Key::E)) => player_explosion.play(),
-            Some(Button::Keyboard(Key::W)) => missile.explosion.play(),
+            Some(Button::Keyboard(Key::W)) => missile.explode(),
+            Some(Button::Keyboard(Key::Q)) => {
+                missile.reset(Point::new(0.0, 0.0), Point::new(0.0, 0.0))
+            }
             _ => (),
         }
 
