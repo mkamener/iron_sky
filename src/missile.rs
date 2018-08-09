@@ -17,6 +17,7 @@ pub struct Missile {
     state: State,
     pub collider: Collider,
     velocity: Point,
+    sprite: Sprite<G2dTexture>,
     explosion: Animation,
 }
 
@@ -31,11 +32,17 @@ impl Collides for Missile {
 }
 
 impl Missile {
-    pub fn new(collider: Collider, velocity: Point, explosion: Animation) -> Missile {
+    pub fn new(
+        collider: Collider,
+        velocity: Point,
+        sprite: Sprite<G2dTexture>,
+        explosion: Animation,
+    ) -> Missile {
         Missile {
             state: State::Active,
             collider: collider,
             velocity: velocity,
+            sprite: sprite,
             explosion: explosion,
         }
     }
@@ -59,17 +66,14 @@ impl Missile {
         }
     }
 
-    pub fn draw(
-        &self,
-        sprite: &mut Sprite<G2dTexture>,
-        c: piston_window::Context,
-        g: &mut G2d,
-    ) -> () {
+    pub fn draw(&mut self, c: piston_window::Context, g: &mut G2d) -> () {
         match self.state {
             State::Active => {
-                sprite.set_position(self.collider.pos.x, self.collider.pos.y);
-                sprite.set_rotation(self.velocity.y.atan2(self.velocity.x).to_degrees());
-                sprite.draw(c.transform, g);
+                self.sprite
+                    .set_position(self.collider.pos.x, self.collider.pos.y);
+                self.sprite
+                    .set_rotation(self.velocity.y.atan2(self.velocity.x).to_degrees());
+                self.sprite.draw(c.transform, g);
             }
             State::Exploding => {
                 self.explosion.draw(c, g);

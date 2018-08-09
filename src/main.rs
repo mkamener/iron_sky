@@ -66,9 +66,6 @@ fn main() {
     let missile2_pos = Point::new(0.0, height as f64 / 2.0);
     let missile2_vel = Point::new(1000.0, 0.0);
 
-    let mut spr_missile1 = load_sprite(&mut window, &assets, "missile.png");
-    let mut spr_missile2 = load_sprite(&mut window, &assets, "missile.png");
-
     let missile_explosion1 = Animation::new(
         &mut window,
         &assets,
@@ -94,12 +91,14 @@ fn main() {
     let mut missile1 = Missile::new(
         Collider::new(missile1_pos, settings::missile::COLLIDER_RADIUS),
         missile1_vel,
+        load_sprite(&mut window, &assets, "missile.png"),
         missile_explosion1,
     );
 
     let mut missile2 = Missile::new(
         Collider::new(missile2_pos, settings::missile::COLLIDER_RADIUS),
         missile2_vel,
+        load_sprite(&mut window, &assets, "missile.png"),
         missile_explosion2,
     );
 
@@ -115,8 +114,8 @@ fn main() {
 
             background.draw(height, width, c, g);
             player.draw(c, g);
-            missile1.draw(&mut spr_missile1, c, g);
-            missile2.draw(&mut spr_missile2, c, g);
+            missile1.draw(c, g);
+            missile2.draw(c, g);
 
             // Draw debug shapes if requested
             if settings::game::DRAW_DEBUG {
