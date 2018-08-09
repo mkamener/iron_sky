@@ -3,6 +3,7 @@ extern crate piston_window;
 use game::*;
 use piston_window::*;
 use sprite::Sprite;
+use traits::Collides;
 
 #[derive(Copy, Clone)]
 enum Action {
@@ -24,6 +25,16 @@ pub struct Player {
     pub collider: Collider,
     explosion: Animation,
     rot: f64,
+}
+
+impl Collides for Player {
+    fn collides_with<C: Collides>(&self, other: &C) -> bool {
+        self.collider.collides_with(other.get_collider())
+    }
+
+    fn get_collider(&self) -> &Collider {
+        &self.collider
+    }
 }
 
 impl Player {

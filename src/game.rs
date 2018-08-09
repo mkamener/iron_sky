@@ -1,8 +1,11 @@
 extern crate piston_window;
 
+use missile::Missile;
 use piston_window::*;
+use player::Player;
 use sprite::*;
 use std::ops::{Add, Div, Mul, Sub};
+use traits::Collides;
 
 #[derive(Copy, Clone, PartialEq)]
 pub enum KeyState {
@@ -268,6 +271,41 @@ pub fn load_texture(
         Flip::None,
         &TextureSettings::new(),
     ).unwrap()
+}
+
+pub fn explosion_collisions(player: &mut Player, mut missiles: Vec<&mut Missile>) -> () {
+    let mut missile_collisions = vec![false; missiles.len()];
+    let mut player_collision = false;
+
+    // Check for missile collisions
+    for (i, obj_i) in missiles.iter().enumerate() {
+        for (j, obj_j) in missiles[(i + 1)..].iter().enumerate() {
+            if obj_i.collides_with(*obj_j) {
+                missile_collisions[i] = true;
+                missile_collisions[i + j + 1] = true;
+            }
+        }
+    }
+
+    // Check for player and missile collision
+    for (i, missile) in missiles.iter().enumerate() {
+        if player.collides_with(*missile) {
+            player_collision = true;
+            missile_collisions[i] = true;
+        }
+    }
+
+    // Explode collided missiles
+    for (idx, has_collided) in missile_collisions.iter().enumerate() {
+        if *has_collided {
+            missiles[idx].explode();
+        }
+    }
+
+    // Explode collided player
+    if player_collision {
+        player.explode();
+    }
 }
 
 #[cfg(test)]

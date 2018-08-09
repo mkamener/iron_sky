@@ -4,6 +4,7 @@ use game::{Animation, *};
 use piston_window::*;
 use player::*;
 use sprite::*;
+use traits::Collides;
 
 #[derive(Copy, Clone)]
 enum State {
@@ -17,6 +18,16 @@ pub struct Missile {
     pub collider: Collider,
     velocity: Point,
     explosion: Animation,
+}
+
+impl Collides for Missile {
+    fn collides_with<C: Collides>(&self, other: &C) -> bool {
+        self.collider.collides_with(other.get_collider())
+    }
+
+    fn get_collider(&self) -> &Collider {
+        &self.collider
+    }
 }
 
 impl Missile {

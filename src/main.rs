@@ -7,6 +7,7 @@ mod game;
 mod missile;
 mod player;
 mod settings;
+mod traits;
 
 use background::*;
 use game::*;
@@ -156,33 +157,7 @@ fn main() {
             missile2.update(&player, u.dt);
             background.update(&player, u.dt);
 
-            // Collisions
-            let mut coll_player = false;
-            let mut coll_missile1 = false;
-            let mut coll_missile2 = false;
-
-            if player.collider.collides_with(&missile1.collider) {
-                coll_player = true;
-                coll_missile1 = true;
-            }
-            if player.collider.collides_with(&missile2.collider) {
-                coll_player = true;
-                coll_missile2 = true;
-            }
-            if missile1.collider.collides_with(&missile2.collider) {
-                coll_missile1 = true;
-                coll_missile2 = true;
-            }
-
-            if coll_player {
-                player.explode();
-            }
-            if coll_missile1 {
-                missile1.explode();
-            }
-            if coll_missile2 {
-                missile2.explode();
-            }
+            explosion_collisions(&mut player, vec![&mut missile1, &mut missile2]);
         }
     }
 }
