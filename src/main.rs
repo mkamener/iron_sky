@@ -119,8 +119,6 @@ fn main() {
             for missile in &mut missiles {
                 missile.draw(c, g);
             }
-            // missile1.draw(c, g);
-            // missile2.draw(c, g);
 
             // Draw debug shapes if requested
             if settings::game::DRAW_DEBUG {
