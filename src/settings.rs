@@ -4,7 +4,7 @@ pub mod game {
 }
 
 pub mod window {
-    pub const SIZE: (u32, u32) = (1280, 720);
+    pub const SIZE: (u32, u32) = (1440, 960);
 }
 
 pub mod player {
