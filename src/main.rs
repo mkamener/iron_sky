@@ -104,6 +104,8 @@ fn main() {
 
     let mut background = Background::new(&mut window, &assets, settings::background::FILES);
 
+    let mut missiles = vec![&mut missile1, &mut missile2];
+
     let mut left_key = KeyState::NotPressed;
     let mut right_key = KeyState::NotPressed;
 
@@ -114,14 +116,17 @@ fn main() {
 
             background.draw(height, width, c, g);
             player.draw(c, g);
-            missile1.draw(c, g);
-            missile2.draw(c, g);
+            for missile in &mut missiles {
+                missile.draw(c, g);
+            }
+            // missile1.draw(c, g);
+            // missile2.draw(c, g);
 
             // Draw debug shapes if requested
             if settings::game::DRAW_DEBUG {
                 player.collider.draw_debug(c, g);
-                missile1.collider.draw_debug(c, g);
-                missile2.collider.draw_debug(c, g);
+                missiles[0].collider.draw_debug(c, g);
+                missiles[1].collider.draw_debug(c, g);
             }
         });
 
@@ -132,8 +137,8 @@ fn main() {
                 Button::Keyboard(Key::Right) => right_key = KeyState::Pressed,
                 Button::Keyboard(Key::R) => {
                     player.reset();
-                    missile1.reset(missile1_pos, missile1_vel);
-                    missile2.reset(missile2_pos, missile2_vel);
+                    missiles[0].reset(missile1_pos, missile1_vel);
+                    missiles[1].reset(missile2_pos, missile2_vel);
                 }
                 _ => (),
             }
@@ -152,11 +157,12 @@ fn main() {
         // Update loop
         if let Some(u) = e.update_args() {
             player.update(u.dt);
-            missile1.update(&player, u.dt);
-            missile2.update(&player, u.dt);
+            for missile in &mut missiles {
+                missile.update(&player, u.dt);
+            }
             background.update(&player, u.dt);
 
-            explosion_collisions(&mut player, vec![&mut missile1, &mut missile2]);
+            explosion_collisions(&mut player, &mut missiles);
         }
     }
 }

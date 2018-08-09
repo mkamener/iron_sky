@@ -273,7 +273,7 @@ pub fn load_texture(
     ).unwrap()
 }
 
-pub fn explosion_collisions(player: &mut Player, mut missiles: Vec<&mut Missile>) -> () {
+pub fn explosion_collisions(player: &mut Player, missiles: &mut Vec<&mut Missile>) -> () {
     let mut missile_collisions = vec![false; missiles.len()];
     let mut player_collision = false;
 
