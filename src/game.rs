@@ -273,14 +273,14 @@ pub fn load_texture(
     ).unwrap()
 }
 
-pub fn explosion_collisions(player: &mut Player, missiles: &mut Vec<&mut Missile>) -> () {
+pub fn explosion_collisions(player: &mut Player, missiles: &mut Vec<Missile>) -> () {
     let mut missile_collisions = vec![false; missiles.len()];
     let mut player_collision = false;
 
     // Check for missile collisions
     for (i, obj_i) in missiles.iter().enumerate() {
         for (j, obj_j) in missiles[(i + 1)..].iter().enumerate() {
-            if obj_i.collides_with(*obj_j) {
+            if obj_i.collides_with(obj_j) {
                 missile_collisions[i] = true;
                 missile_collisions[i + j + 1] = true;
             }
@@ -289,7 +289,7 @@ pub fn explosion_collisions(player: &mut Player, missiles: &mut Vec<&mut Missile
 
     // Check for player and missile collision
     for (i, missile) in missiles.iter().enumerate() {
-        if player.collides_with(*missile) {
+        if player.collides_with(missile) {
             player_collision = true;
             missile_collisions[i] = true;
         }

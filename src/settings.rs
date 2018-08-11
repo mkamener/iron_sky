@@ -1,6 +1,8 @@
 pub mod game {
     // Draw collider outlines
     pub const DRAW_DEBUG: bool = false;
+
+    pub const MAX_MISSILES: u32 = 4;
 }
 
 pub mod window {
@@ -28,6 +30,11 @@ pub mod missile {
     // Explosion Settings
     pub const EXPLOSION_LENGTH: f64 = 0.5;
     pub const EXPLOSION_ZOOM: f64 = 1.0;
+}
+
+pub mod missile_generator {
+    pub const SPAWN_RADIUS: f64 = 1000.0;
+    pub const TIME_TO_APPEAR: f64 = 5.0;
 }
 
 pub mod background {

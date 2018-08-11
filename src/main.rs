@@ -60,51 +60,11 @@ fn main() {
         player_explosion,
     );
 
-    let missile1_pos = Point::new(width as f64 / 2.0, 0.0);
-    let missile1_vel = Point::new(-500.0, 1000.0);
-
-    let missile2_pos = Point::new(0.0, height as f64 / 2.0);
-    let missile2_vel = Point::new(1000.0, 0.0);
-
-    let missile_explosion1 = Animation::new(
-        &mut window,
-        &assets,
-        "explosions/3.png",
-        centre,
-        8,
-        8,
-        settings::missile::EXPLOSION_LENGTH,
-        settings::missile::EXPLOSION_ZOOM,
-    );
-
-    let missile_explosion2 = Animation::new(
-        &mut window,
-        &assets,
-        "explosions/4.png",
-        centre,
-        8,
-        8,
-        settings::missile::EXPLOSION_LENGTH,
-        settings::missile::EXPLOSION_ZOOM,
-    );
-
-    let mut missile1 = Missile::new(
-        Collider::new(missile1_pos, settings::missile::COLLIDER_RADIUS),
-        missile1_vel,
-        load_sprite(&mut window, &assets, "missile.png"),
-        missile_explosion1,
-    );
-
-    let mut missile2 = Missile::new(
-        Collider::new(missile2_pos, settings::missile::COLLIDER_RADIUS),
-        missile2_vel,
-        load_sprite(&mut window, &assets, "missile.png"),
-        missile_explosion2,
-    );
-
     let mut background = Background::new(&mut window, &assets, settings::background::FILES);
 
-    let mut missiles = vec![&mut missile1, &mut missile2];
+    let mut missiles = initialise_missiles(&mut window, &assets);
+
+    let mut missile_gen = Generator::new();
 
     let mut left_key = KeyState::NotPressed;
     let mut right_key = KeyState::NotPressed;
@@ -133,11 +93,6 @@ fn main() {
             match press_args {
                 Button::Keyboard(Key::Left) => left_key = KeyState::Pressed,
                 Button::Keyboard(Key::Right) => right_key = KeyState::Pressed,
-                Button::Keyboard(Key::R) => {
-                    player.reset();
-                    missiles[0].reset(missile1_pos, missile1_vel);
-                    missiles[1].reset(missile2_pos, missile2_vel);
-                }
                 _ => (),
             }
             player.input(left_key, right_key);
@@ -159,6 +114,7 @@ fn main() {
                 missile.update(&player, u.dt);
             }
             background.update(&player, u.dt);
+            missile_gen.update(&mut missiles, u.dt);
 
             explosion_collisions(&mut player, &mut missiles);
         }
