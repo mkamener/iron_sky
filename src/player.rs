@@ -47,11 +47,11 @@ impl Player {
     }
 
     pub fn update(&mut self, dt: f64) {
-        let added_rotation = 270.0 as f64;
+        use settings::player;
         match self.state {
             State::Active(action) => match action {
-                Action::Left => self.rot = self.rot - added_rotation * dt,
-                Action::Right => self.rot = self.rot + added_rotation * dt,
+                Action::Left => self.rot = self.rot - player::ANGULAR_VELOCITY * dt,
+                Action::Right => self.rot = self.rot + player::ANGULAR_VELOCITY * dt,
                 Action::NoMove => (),
             },
             State::Exploding => {

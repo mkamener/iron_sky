@@ -12,6 +12,7 @@ pub mod window {
 
 pub mod player {
     pub const SPEED: f64 = 800.0;
+    pub const ANGULAR_VELOCITY: f64 = 270.0; // Degrees per second
 
     // Collider
     pub const COLLIDER_RADIUS: f64 = 30.0;
