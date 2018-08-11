@@ -149,20 +149,17 @@ pub fn initialise_missiles() -> Vec<Missile> {
     missiles
 }
 
-fn n_active_missiles(missiles: &[Missile]) -> u32 {
-    missiles.iter().fold(0, |acc, ref m| match m.state {
-        State::Active => acc + 1,
-        State::Exploding => acc + 1,
-        State::Inactive => acc,
-    })
-}
-
 fn place_missile(missile: &mut Missile) -> () {
+    use rand::{thread_rng, Rng};
     use settings::{missile_generator, window};
+
+    let mut rng = thread_rng();
+    let angle = rng.gen_range(0.0, ::std::f64::consts::PI * 2.0);
+
     let (width, height) = window::SIZE;
     let pos = Point::new(
-        width as f64 - missile_generator::SPAWN_RADIUS,
-        height as f64 - missile_generator::SPAWN_RADIUS,
+        (width as f64) / 2.0 - (angle.cos() * missile_generator::SPAWN_RADIUS),
+        (height as f64) / 2.0 - (angle.sin() * missile_generator::SPAWN_RADIUS),
     );
     let velocity = Point::new(0.0, 0.0);
 

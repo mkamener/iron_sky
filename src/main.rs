@@ -1,5 +1,6 @@
 extern crate find_folder;
 extern crate piston_window;
+extern crate rand;
 extern crate sprite;
 
 mod background;
@@ -31,20 +32,13 @@ fn main() {
         .for_folder("assets")
         .unwrap();
 
-    let mut spr_player = load_sprite(&mut window, &assets, "player.png");
-    spr_player.set_position(centre.x, centre.y);
-    spr_player.set_scale(0.8 as f64, 0.8 as f64);
-
-    let mut spr_player_left = load_sprite(&mut window, &assets, "playerLeft.png");
-    spr_player_left.set_position(centre.x, centre.y);
-    spr_player_left.set_scale(0.8 as f64, 0.8 as f64);
-
-    let mut spr_player_right = load_sprite(&mut window, &assets, "playerRight.png");
-    spr_player_right.set_position(centre.x, centre.y);
-    spr_player_right.set_scale(0.8 as f64, 0.8 as f64);
-
     let mut tex_explosion_player = AnimTexture::new(&mut window, &assets, "explosions/2.png", 8, 8);
-    let mut spr_player = [spr_player_left, spr_player, spr_player_right];
+    let mut spr_player = initialise_player_sprites(
+        &mut window,
+        &assets,
+        ["playerLeft.png", "player.png", "playerRight.png"],
+        0.8,
+    );
     let mut player = Player::new(
         Collider::new(centre, settings::player::COLLIDER_RADIUS),
         Animation::new(

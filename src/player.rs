@@ -94,8 +94,10 @@ impl Player {
         match self.state {
             State::Active(action) => {
                 let rot = self.rot;
-                self.active_sprite(sprites, action).set_rotation(rot);
-                self.active_sprite(sprites, action).draw(c.transform, g);
+                let mut sprite = self.active_sprite(sprites, action);
+                sprite.set_rotation(rot);
+                sprite.set_position(self.collider.pos.x, self.collider.pos.y);
+                sprite.draw(c.transform, g);
             }
             State::Exploding => {
                 self.explosion.draw(explosion_tex, c, g);
@@ -146,4 +148,22 @@ impl Player {
             Action::Right => &mut sprites[2],
         }
     }
+}
+
+pub fn initialise_player_sprites(
+    window: &mut PistonWindow,
+    folder: &::std::path::PathBuf,
+    files: [&str; 3],
+    scale: f64,
+) -> [Sprite<G2dTexture>; 3] {
+    let mut spr_player_left = load_sprite(window, folder, files[0]);
+    spr_player_left.set_scale(scale, scale);
+
+    let mut spr_player_mid = load_sprite(window, folder, files[1]);
+    spr_player_mid.set_scale(scale, scale);
+
+    let mut spr_player_right = load_sprite(window, folder, files[2]);
+    spr_player_right.set_scale(scale, scale);
+
+    [spr_player_left, spr_player_mid, spr_player_right]
 }
