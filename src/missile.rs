@@ -227,6 +227,9 @@ impl Generator {
         for missile in missiles.iter_mut() {
             missile.reset();
         }
+
+        place_missile(&mut missiles[0]);
+
         self.time_since_last_missile = 0.0;
     }
 }

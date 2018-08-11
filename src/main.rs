@@ -65,6 +65,7 @@ fn main() {
     let mut missiles = initialise_missiles(&mut window, &assets);
 
     let mut missile_gen = Generator::new();
+    missile_gen.reset_missiles(&mut missiles);
 
     let mut left_key = KeyState::NotPressed;
     let mut right_key = KeyState::NotPressed;
