@@ -61,6 +61,10 @@ impl Pickup {
         }
     }
 
+    pub fn collect(&mut self) -> () {
+        self.reset();
+    }
+
     pub fn place(&mut self, pos: Point) -> () {
         self.collider.pos = pos;
         self.state = State::Active;

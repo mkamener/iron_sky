@@ -1,6 +1,7 @@
 extern crate piston_window;
 
 use missile::Missile;
+use pickups::Pickup;
 use piston_window::*;
 use player::Player;
 use sprite::*;
@@ -307,6 +308,14 @@ pub fn explosion_collisions(player: &mut Player, missiles: &mut Vec<Missile>) ->
     // Explode collided player
     if player_collision {
         player.explode();
+    }
+}
+
+pub fn collect_collisions(player: &Player, pickups: &mut Vec<Pickup>) -> () {
+    for pickup in pickups.iter_mut() {
+        if player.collides_with(pickup) {
+            pickup.collect();
+        }
     }
 }
 

@@ -141,6 +141,7 @@ fn main() {
             pickup_gen.update(&mut pickups, &player, u.dt);
 
             explosion_collisions(&mut player, &mut missiles);
+            collect_collisions(&player, &mut pickups);
         }
     }
 }
