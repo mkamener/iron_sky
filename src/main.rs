@@ -44,10 +44,9 @@ fn main() {
     spr_player_right.set_scale(0.8 as f64, 0.8 as f64);
 
     let mut tex_explosion_player = AnimTexture::new(&mut window, &assets, "explosions/2.png", 8, 8);
-
+    let mut spr_player = [spr_player_left, spr_player, spr_player_right];
     let mut player = Player::new(
         Collider::new(centre, settings::player::COLLIDER_RADIUS),
-        [spr_player_left, spr_player, spr_player_right],
         Animation::new(
             settings::player::EXPLOSION_LENGTH,
             settings::player::EXPLOSION_ZOOM,
@@ -60,7 +59,7 @@ fn main() {
     let mut tex_explosion_missile =
         AnimTexture::new(&mut window, &assets, "explosions/4.png", 8, 8);
 
-    let mut missiles = initialise_missiles(&mut window, &assets);
+    let mut missiles = initialise_missiles();
 
     let mut missile_gen = Generator::new();
     missile_gen.reset_missiles(&mut missiles);
@@ -74,7 +73,7 @@ fn main() {
             clear([1.0; 4], g); // Clear to white
 
             background.draw(height, width, c, g);
-            player.draw(&mut tex_explosion_player, c, g);
+            player.draw(&mut spr_player, &mut tex_explosion_player, c, g);
             for missile in &mut missiles {
                 missile.draw(&mut spr_missile, &mut tex_explosion_missile, c, g);
             }

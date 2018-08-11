@@ -131,10 +131,7 @@ impl Missile {
     }
 }
 
-pub fn initialise_missiles<'a>(
-    window: &mut PistonWindow,
-    folder: &::std::path::PathBuf,
-) -> Vec<Missile> {
+pub fn initialise_missiles() -> Vec<Missile> {
     use settings::{game, missile};
 
     let mut missiles: Vec<Missile> = vec![];

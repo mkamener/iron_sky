@@ -21,7 +21,6 @@ enum State {
 
 pub struct Player {
     state: State,
-    sprites: [Sprite<G2dTexture>; 3],
     pub collider: Collider,
     explosion: Animation,
     rot: f64,
@@ -38,14 +37,9 @@ impl Collides for Player {
 }
 
 impl Player {
-    pub fn new(
-        collider: Collider,
-        sprites: [Sprite<G2dTexture>; 3],
-        explosion: Animation,
-    ) -> Player {
+    pub fn new(collider: Collider, explosion: Animation) -> Player {
         Player {
             state: State::Active(Action::NoMove),
-            sprites: sprites,
             collider: collider,
             explosion: explosion,
             rot: 0.0,
@@ -92,6 +86,7 @@ impl Player {
 
     pub fn draw(
         &mut self,
+        sprites: &mut [Sprite<G2dTexture>; 3],
         explosion_tex: &mut AnimTexture,
         c: piston_window::Context,
         g: &mut G2d,
@@ -99,8 +94,8 @@ impl Player {
         match self.state {
             State::Active(action) => {
                 let rot = self.rot;
-                self.active_sprite(action).set_rotation(rot);
-                self.active_sprite(action).draw(c.transform, g);
+                self.active_sprite(sprites, action).set_rotation(rot);
+                self.active_sprite(sprites, action).draw(c.transform, g);
             }
             State::Exploding => {
                 self.explosion.draw(explosion_tex, c, g);
@@ -140,11 +135,15 @@ impl Player {
         }
     }
 
-    fn active_sprite(&mut self, action: Action) -> &mut Sprite<G2dTexture> {
+    fn active_sprite<'a>(
+        &mut self,
+        sprites: &'a mut [Sprite<G2dTexture>; 3],
+        action: Action,
+    ) -> &'a mut Sprite<G2dTexture> {
         match action {
-            Action::Left => &mut self.sprites[0],
-            Action::NoMove => &mut self.sprites[1],
-            Action::Right => &mut self.sprites[2],
+            Action::Left => &mut sprites[0],
+            Action::NoMove => &mut sprites[1],
+            Action::Right => &mut sprites[2],
         }
     }
 }
