@@ -145,11 +145,44 @@ impl Collider {
     }
 }
 
-pub struct Animation {
+pub struct AnimTexture {
     texture: G2dTexture,
     frames: Vec<[f64; 4]>,
+}
+
+impl AnimTexture {
+    pub fn new(
+        window: &mut PistonWindow,
+        folder: &::std::path::PathBuf,
+        file: &str,
+        rows: u32,
+        cols: u32,
+    ) -> AnimTexture {
+        let mut frames = vec![];
+        let texture = load_texture(window, folder, file);
+        let (width, height) = texture.get_size();
+        let (tex_width, tex_height) = (width / cols, height / rows);
+
+        for y in 0..rows {
+            for x in 0..cols {
+                frames.push([
+                    (x * tex_width) as f64,
+                    (y * tex_height) as f64,
+                    tex_width as f64,
+                    tex_height as f64,
+                ]);
+            }
+        }
+
+        AnimTexture {
+            texture: texture,
+            frames: frames,
+        }
+    }
+}
+
+pub struct Animation {
     pos: Point,
-    frame_idx: usize,
     length: f64,
     duration: f64,
     playing: bool,
@@ -157,36 +190,9 @@ pub struct Animation {
 }
 
 impl Animation {
-    pub fn new(
-        window: &mut PistonWindow,
-        folder: &::std::path::PathBuf,
-        file: &str,
-        pos: Point,
-        rows: u32,
-        cols: u32,
-        length: f64,
-        zoom: f64,
-    ) -> Animation {
-        let mut frames = vec![];
-        let texture = load_texture(window, folder, file);
-        let (width, height) = texture.get_size();
-        let (spr_width, spr_height) = (width / cols, height / rows);
-
-        for y in 0..rows {
-            for x in 0..cols {
-                frames.push([
-                    (x * spr_width) as f64,
-                    (y * spr_height) as f64,
-                    spr_width as f64,
-                    spr_height as f64,
-                ]);
-            }
-        }
+    pub fn new(length: f64, zoom: f64) -> Animation {
         Animation {
-            texture: texture,
-            frames: frames,
-            pos: pos,
-            frame_idx: 0,
+            pos: Point::new(0.0, 0.0),
             length: length,
             duration: 0.0,
             playing: false,
@@ -194,13 +200,14 @@ impl Animation {
         }
     }
 
-    pub fn draw(&self, c: piston_window::Context, g: &mut G2d) -> () {
+    pub fn draw(&self, anim_tex: &mut AnimTexture, c: piston_window::Context, g: &mut G2d) -> () {
         if self.playing == false {
             return;
         };
-        let frame = self.frames[self.frame_idx];
+        let idx = ((self.duration / self.length) * (anim_tex.frames.len() as f64)).floor() as usize;
+        let frame = anim_tex.frames[idx];
         Image::new().src_rect(frame).draw(
-            &self.texture,
+            &anim_tex.texture,
             &c.draw_state,
             c.transform
                 .trans(
@@ -217,24 +224,19 @@ impl Animation {
             return;
         };
         self.duration = self.duration + dt;
-        let idx = ((self.duration / self.length) * (self.frames.len() as f64)).floor() as usize;
-        if idx < self.frames.len() {
-            self.frame_idx = idx;
-        } else {
+        if self.duration > self.length {
             self.stop();
         }
     }
 
     pub fn play(&mut self) -> () {
         self.duration = 0.0;
-        self.frame_idx = 0;
         self.playing = true;
     }
 
     pub fn stop(&mut self) -> () {
         self.playing = false;
         self.duration = 0.0;
-        self.frame_idx = 0;
     }
 
     pub fn set_pos(&mut self, pos: Point) -> () {

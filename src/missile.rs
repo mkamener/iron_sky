@@ -17,7 +17,6 @@ pub struct Missile {
     state: State,
     pub collider: Collider,
     velocity: Point,
-    sprite: Sprite<G2dTexture>,
     explosion: Animation,
 }
 
@@ -32,18 +31,12 @@ impl Collides for Missile {
 }
 
 impl Missile {
-    pub fn new(
-        mut collider: Collider,
-        velocity: Point,
-        sprite: Sprite<G2dTexture>,
-        explosion: Animation,
-    ) -> Missile {
+    pub fn new(mut collider: Collider, velocity: Point, explosion: Animation) -> Missile {
         collider.disable();
         Missile {
             state: State::Inactive,
             collider: collider,
             velocity: velocity,
-            sprite: sprite,
             explosion: explosion,
         }
     }
@@ -67,17 +60,21 @@ impl Missile {
         }
     }
 
-    pub fn draw(&mut self, c: piston_window::Context, g: &mut G2d) -> () {
+    pub fn draw(
+        &mut self,
+        sprite: &mut Sprite<G2dTexture>,
+        explosion_tex: &mut AnimTexture,
+        c: piston_window::Context,
+        g: &mut G2d,
+    ) -> () {
         match self.state {
             State::Active => {
-                self.sprite
-                    .set_position(self.collider.pos.x, self.collider.pos.y);
-                self.sprite
-                    .set_rotation(self.velocity.y.atan2(self.velocity.x).to_degrees());
-                self.sprite.draw(c.transform, g);
+                sprite.set_position(self.collider.pos.x, self.collider.pos.y);
+                sprite.set_rotation(self.velocity.y.atan2(self.velocity.x).to_degrees());
+                sprite.draw(c.transform, g);
             }
             State::Exploding => {
-                self.explosion.draw(c, g);
+                self.explosion.draw(explosion_tex, c, g);
             }
             State::Inactive => {}
         }
@@ -143,22 +140,10 @@ pub fn initialise_missiles<'a>(
     let mut missiles: Vec<Missile> = vec![];
 
     for _ in 0..game::MAX_MISSILES {
-        let missile_explosion = Animation::new(
-            window,
-            folder,
-            "explosions/4.png",
-            Point::new(0.0, 0.0),
-            8,
-            8,
-            missile::EXPLOSION_LENGTH,
-            missile::EXPLOSION_ZOOM,
-        );
-
         let missile = Missile::new(
             Collider::new(Point::new(0.0, 0.0), missile::COLLIDER_RADIUS),
             Point::new(0.0, 0.0),
-            load_sprite(window, folder, "missile.png"),
-            missile_explosion,
+            Animation::new(missile::EXPLOSION_LENGTH, missile::EXPLOSION_ZOOM),
         );
 
         missiles.push(missile);

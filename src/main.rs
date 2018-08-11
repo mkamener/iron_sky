@@ -43,24 +43,22 @@ fn main() {
     spr_player_right.set_position(centre.x, centre.y);
     spr_player_right.set_scale(0.8 as f64, 0.8 as f64);
 
-    let player_explosion = Animation::new(
-        &mut window,
-        &assets,
-        "explosions/2.png",
-        centre,
-        8,
-        8,
-        settings::player::EXPLOSION_LENGTH,
-        settings::player::EXPLOSION_ZOOM,
-    );
+    let mut tex_explosion_player = AnimTexture::new(&mut window, &assets, "explosions/2.png", 8, 8);
 
     let mut player = Player::new(
         Collider::new(centre, settings::player::COLLIDER_RADIUS),
         [spr_player_left, spr_player, spr_player_right],
-        player_explosion,
+        Animation::new(
+            settings::player::EXPLOSION_LENGTH,
+            settings::player::EXPLOSION_ZOOM,
+        ),
     );
 
     let mut background = Background::new(&mut window, &assets, settings::background::FILES);
+
+    let mut spr_missile = load_sprite(&mut window, &assets, "missile.png");
+    let mut tex_explosion_missile =
+        AnimTexture::new(&mut window, &assets, "explosions/4.png", 8, 8);
 
     let mut missiles = initialise_missiles(&mut window, &assets);
 
@@ -76,9 +74,9 @@ fn main() {
             clear([1.0; 4], g); // Clear to white
 
             background.draw(height, width, c, g);
-            player.draw(c, g);
+            player.draw(&mut tex_explosion_player, c, g);
             for missile in &mut missiles {
-                missile.draw(c, g);
+                missile.draw(&mut spr_missile, &mut tex_explosion_missile, c, g);
             }
 
             // Draw debug shapes if requested

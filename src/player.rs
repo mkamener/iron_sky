@@ -90,7 +90,12 @@ impl Player {
         }
     }
 
-    pub fn draw(&mut self, c: piston_window::Context, g: &mut G2d) -> () {
+    pub fn draw(
+        &mut self,
+        explosion_tex: &mut AnimTexture,
+        c: piston_window::Context,
+        g: &mut G2d,
+    ) -> () {
         match self.state {
             State::Active(action) => {
                 let rot = self.rot;
@@ -98,7 +103,7 @@ impl Player {
                 self.active_sprite(action).draw(c.transform, g);
             }
             State::Exploding => {
-                self.explosion.draw(c, g);
+                self.explosion.draw(explosion_tex, c, g);
             }
             State::Inactive => {}
         }
@@ -108,8 +113,9 @@ impl Player {
         match self.state {
             State::Active(_) => {
                 self.state = State::Exploding;
-                self.explosion.play();
                 self.collider.disable();
+                self.explosion.play();
+                self.explosion.set_pos(self.collider.pos);
             }
             State::Exploding | State::Inactive => {}
         }
