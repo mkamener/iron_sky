@@ -15,6 +15,8 @@ enum State {
 pub struct Pickup {
     state: State,
     pub collider: Collider,
+    time_alive: f64,
+    rot: f64,
 }
 
 impl Collides for Pickup {
@@ -33,12 +35,16 @@ impl Pickup {
         Pickup {
             state: State::Inactive,
             collider: collider,
+            time_alive: 0.0,
+            rot: 0.0,
         }
     }
 
     pub fn update(&mut self, player: &Player, dt: f64) {
         match self.state {
             State::Active => {
+                self.time_alive += dt;
+
                 // Update position based off player movement
                 self.collider.pos = self.collider.pos - player.velocity() * dt;
             }
@@ -54,7 +60,9 @@ impl Pickup {
     ) -> () {
         match self.state {
             State::Active => {
+                self.set_rotation();
                 sprite.set_position(self.collider.pos.x, self.collider.pos.y);
+                sprite.set_rotation(self.rot);
                 sprite.draw(c.transform, g);
             }
             State::Inactive => {}
@@ -74,6 +82,12 @@ impl Pickup {
     pub fn reset(&mut self) -> () {
         self.state = State::Inactive;
         self.collider.disable();
+    }
+
+    fn set_rotation(&mut self) -> () {
+        use settings::pickup;
+
+        self.rot = 360.0 * (self.time_alive / pickup::ROTATION_PERIOD);
     }
 }
 

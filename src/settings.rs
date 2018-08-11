@@ -39,6 +39,8 @@ pub mod missile_generator {
 }
 
 pub mod pickup {
+    pub const ROTATION_PERIOD: f64 = 4.0;
+
     // Collider
     pub const COLLIDER_RADIUS: f64 = 20.0;
 }

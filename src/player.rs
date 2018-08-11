@@ -93,9 +93,8 @@ impl Player {
     ) -> () {
         match self.state {
             State::Active(action) => {
-                let rot = self.rot;
                 let mut sprite = self.active_sprite(sprites, action);
-                sprite.set_rotation(rot);
+                sprite.set_rotation(self.rot);
                 sprite.set_position(self.collider.pos.x, self.collider.pos.y);
                 sprite.draw(c.transform, g);
             }
