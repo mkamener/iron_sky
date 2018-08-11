@@ -95,11 +95,17 @@ impl Missile {
         }
     }
 
-    pub fn reset(&mut self, pos: Point, velocity: Point) -> () {
+    pub fn place(&mut self, pos: Point, velocity: Point) -> () {
         self.collider.pos = pos;
         self.velocity = velocity;
         self.state = State::Active;
         self.collider.enable();
+        self.explosion.stop();
+    }
+
+    pub fn reset(&mut self) -> () {
+        self.state = State::Inactive;
+        self.collider.disable();
         self.explosion.stop();
     }
 
@@ -178,7 +184,7 @@ fn place_missile(missile: &mut Missile) -> () {
     );
     let velocity = Point::new(0.0, 0.0);
 
-    missile.reset(pos, velocity);
+    missile.place(pos, velocity);
 }
 
 pub struct Generator {
@@ -192,8 +198,12 @@ impl Generator {
         }
     }
 
-    pub fn update(&mut self, missiles: &mut Vec<Missile>, dt: f64) -> () {
+    pub fn update(&mut self, missiles: &mut Vec<Missile>, player: &Player, dt: f64) -> () {
         use settings::missile_generator;
+
+        if !player.is_active() {
+            return;
+        }
 
         let mut place_new_missile = false;
 
@@ -211,5 +221,12 @@ impl Generator {
                 place_missile(&mut missiles[idx]);
             }
         }
+    }
+
+    pub fn reset_missiles(&mut self, missiles: &mut Vec<Missile>) -> () {
+        for missile in missiles.iter_mut() {
+            missile.reset();
+        }
+        self.time_since_last_missile = 0.0;
     }
 }

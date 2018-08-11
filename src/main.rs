@@ -93,6 +93,10 @@ fn main() {
             match press_args {
                 Button::Keyboard(Key::Left) => left_key = KeyState::Pressed,
                 Button::Keyboard(Key::Right) => right_key = KeyState::Pressed,
+                Button::Keyboard(Key::R) => {
+                    missile_gen.reset_missiles(&mut missiles);
+                    player.reset();
+                }
                 _ => (),
             }
             player.input(left_key, right_key);
@@ -114,7 +118,7 @@ fn main() {
                 missile.update(&player, u.dt);
             }
             background.update(&player, u.dt);
-            missile_gen.update(&mut missiles, u.dt);
+            missile_gen.update(&mut missiles, &player, u.dt);
 
             explosion_collisions(&mut player, &mut missiles);
         }
