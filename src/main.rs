@@ -6,6 +6,7 @@ extern crate sprite;
 mod background;
 mod game;
 mod missile;
+mod pickups;
 mod player;
 mod settings;
 mod traits;
@@ -13,6 +14,7 @@ mod traits;
 use background::*;
 use game::*;
 use missile::*;
+use pickups::*;
 use piston_window::*;
 use player::*;
 
@@ -32,6 +34,7 @@ fn main() {
         .for_folder("assets")
         .unwrap();
 
+    // Player
     let mut tex_explosion_player = AnimTexture::new(&mut window, &assets, "explosions/2.png", 8, 8);
     let mut spr_player = initialise_player_sprites(
         &mut window,
@@ -47,17 +50,27 @@ fn main() {
         ),
     );
 
-    let mut background = Background::new(&mut window, &assets, settings::background::FILES);
-
+    // Missiles
     let mut spr_missile = load_sprite(&mut window, &assets, "missile.png");
     let mut tex_explosion_missile =
         AnimTexture::new(&mut window, &assets, "explosions/4.png", 8, 8);
 
     let mut missiles = initialise_missiles();
-
-    let mut missile_gen = Generator::new();
+    let mut missile_gen = missile::Generator::new();
     missile_gen.reset_missiles(&mut missiles);
 
+    // Pickups
+    let mut spr_pickup = load_sprite(&mut window, &assets, "star.png");
+    spr_pickup.set_scale(0.3, 0.3);
+
+    let mut pickups = initialise_pickups();
+    let mut pickup_gen = pickups::Generator::new();
+    pickup_gen.reset_pickups(&mut pickups);
+
+    // Background
+    let mut background = Background::new(&mut window, &assets, settings::background::FILES);
+
+    // Key State
     let mut left_key = KeyState::NotPressed;
     let mut right_key = KeyState::NotPressed;
 
@@ -66,17 +79,26 @@ fn main() {
         window.draw_2d(&e, |c, g| {
             clear([1.0; 4], g); // Clear to white
 
+            // Render objects in background first
             background.draw(height, width, c, g);
-            player.draw(&mut spr_player, &mut tex_explosion_player, c, g);
+
+            for pickup in &mut pickups {
+                pickup.draw(&mut spr_pickup, c, g);
+            }
             for missile in &mut missiles {
                 missile.draw(&mut spr_missile, &mut tex_explosion_missile, c, g);
             }
+            player.draw(&mut spr_player, &mut tex_explosion_player, c, g);
 
             // Draw debug shapes if requested
             if settings::game::DRAW_DEBUG {
                 player.collider.draw_debug(c, g);
-                missiles[0].collider.draw_debug(c, g);
-                missiles[1].collider.draw_debug(c, g);
+                for missile in &mut missiles {
+                    missile.collider.draw_debug(c, g);
+                }
+                for pickup in &mut pickups {
+                    pickup.collider.draw_debug(c, g);
+                }
             }
         });
 
@@ -87,6 +109,7 @@ fn main() {
                 Button::Keyboard(Key::Right) => right_key = KeyState::Pressed,
                 Button::Keyboard(Key::R) => {
                     missile_gen.reset_missiles(&mut missiles);
+                    pickup_gen.reset_pickups(&mut pickups);
                     player.reset();
                 }
                 _ => (),
@@ -109,8 +132,13 @@ fn main() {
             for missile in &mut missiles {
                 missile.update(&player, u.dt);
             }
+            for pickup in &mut pickups {
+                pickup.update(&player, u.dt);
+            }
+
             background.update(&player, u.dt);
             missile_gen.update(&mut missiles, &player, u.dt);
+            pickup_gen.update(&mut pickups, &player, u.dt);
 
             explosion_collisions(&mut player, &mut missiles);
         }

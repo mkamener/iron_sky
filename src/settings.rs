@@ -3,6 +3,7 @@ pub mod game {
     pub const DRAW_DEBUG: bool = false;
 
     pub const MAX_MISSILES: u32 = 4;
+    pub const MAX_PICKUPS: u32 = 4;
 }
 
 pub mod window {
@@ -35,6 +36,17 @@ pub mod missile {
 pub mod missile_generator {
     pub const SPAWN_RADIUS: f64 = 1000.0;
     pub const TIME_TO_APPEAR: f64 = 5.0;
+}
+
+pub mod pickup {
+    // Collider
+    pub const COLLIDER_RADIUS: f64 = 20.0;
+}
+
+pub mod pickup_generator {
+    pub const MIN_SPAWN_RADIUS: f64 = 200.0;
+    pub const MAX_SPAWN_RADIUS: f64 = 600.0;
+    pub const TIME_TO_APPEAR: f64 = 8.0;
 }
 
 pub mod background {
