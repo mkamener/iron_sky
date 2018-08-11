@@ -7,3 +7,4 @@ authors = ["Mischka <mischka.kamener@gmail.com>"]
 piston_window = "0.80.0"
 find_folder = "0.3.0"
 piston2d-sprite = "0.45.0"
+rand = "0.5.5"
