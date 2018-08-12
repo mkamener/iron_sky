@@ -52,6 +52,11 @@ pub mod pickup_generator {
     pub const TIME_TO_APPEAR: f64 = 8.0;
 }
 
+pub mod offscreen_pointer {
+    pub const SCALE: f64 = 0.3;
+    pub const OFFSET: f64 = 60.0;
+}
+
 pub mod background {
     pub const FILES: &'static [(&str, f64)] = &[
         ("bkgd_0.png", 0.0),
