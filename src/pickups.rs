@@ -88,6 +88,7 @@ impl Pickup {
         self.collider.pos = pos;
         self.state = State::Active;
         self.collider.enable();
+        self.time_alive = 0.0;
     }
 
     pub fn reset(&mut self) -> () {
