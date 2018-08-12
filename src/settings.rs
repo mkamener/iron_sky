@@ -2,7 +2,7 @@ pub mod game {
     // Draw collider outlines
     pub const DRAW_DEBUG: bool = false;
 
-    pub const MAX_MISSILES: u32 = 4;
+    pub const MAX_MISSILES: u32 = 6;
     pub const MAX_PICKUPS: u32 = 4;
 }
 
