@@ -23,8 +23,8 @@ pub mod player {
 }
 
 pub mod missile {
-    pub const MAX_SPEED: f64 = 1200.0;
-    pub const ACCELERATION: f64 = 3000.0;
+    pub const MAX_SPEED: f64 = 1500.0;
+    pub const ACCELERATION: f64 = 3500.0;
 
     // Collider
     pub const COLLIDER_RADIUS: f64 = 20.0;
@@ -35,7 +35,7 @@ pub mod missile {
 }
 
 pub mod missile_generator {
-    pub const SPAWN_RADIUS: f64 = 1000.0;
+    pub const SPAWN_RADIUS: f64 = 1200.0;
     pub const TIME_TO_APPEAR: f64 = 5.0;
 }
 
@@ -48,7 +48,7 @@ pub mod pickup {
 
 pub mod pickup_generator {
     pub const MIN_SPAWN_RADIUS: f64 = 500.0;
-    pub const MAX_SPAWN_RADIUS: f64 = 800.0;
+    pub const MAX_SPAWN_RADIUS: f64 = 1000.0;
     pub const TIME_TO_APPEAR: f64 = 8.0;
 }
 
