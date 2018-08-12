@@ -27,9 +27,11 @@ pub fn draw_anim_offscreen(
     c: piston_window::Context,
     g: &mut G2d,
 ) -> () {
+    use settings::offscreen_pointer::OBJ_SCALE;
+
     if let Some((pos, rot)) = place_pointer(obj_pos) {
         draw_pointer(pointer_spr, pos, rot, c, g);
-        obj_anim.draw_at_pos(obj_anim_tex, pos, 0.4, c, g);
+        obj_anim.draw_at_pos(obj_anim_tex, pos, OBJ_SCALE, c, g);
     }
 }
 
@@ -52,13 +54,16 @@ fn draw_overlay(
     c: piston_window::Context,
     g: &mut G2d,
 ) -> () {
+    use settings::offscreen_pointer::OBJ_SCALE;
+
     let (x_scale, y_scale) = sprite.get_scale();
-    sprite.set_scale(x_scale * 0.4, y_scale * 0.4);
+
+    sprite.set_scale(x_scale * OBJ_SCALE, y_scale * OBJ_SCALE);
     sprite.set_position(pos.x, pos.y);
     sprite.set_rotation(rot);
     sprite.draw(c.transform, g);
 
-    // Set scale back
+    // Set scale back to original
     sprite.set_scale(x_scale, y_scale);
 }
 
