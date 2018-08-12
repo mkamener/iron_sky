@@ -41,12 +41,18 @@ impl Pickup {
     }
 
     pub fn update(&mut self, player: &Player, dt: f64) {
+        use settings::pickup;
+
         match self.state {
             State::Active => {
                 self.time_alive += dt;
 
                 // Update position based off player movement
                 self.collider.pos = self.collider.pos - player.velocity() * dt;
+
+                if self.time_alive > pickup::MAX_TIME {
+                    self.reset();
+                }
             }
             State::Inactive => {}
         }
@@ -60,6 +66,7 @@ impl Pickup {
         g: &mut G2d,
     ) -> () {
         use offscreen::draw_offscreen;
+
         match self.state {
             State::Active => {
                 self.set_rotation();
@@ -169,8 +176,6 @@ impl Generator {
         for pickup in pickups.iter_mut() {
             pickup.reset();
         }
-
-        place_pickup(&mut pickups[0]);
 
         self.time_since_last_pickup = 0.0;
     }

@@ -41,6 +41,7 @@ pub mod missile_generator {
 
 pub mod pickup {
     pub const ROTATION_PERIOD: f64 = 4.0;
+    pub const MAX_TIME: f64 = 10.0;
 
     // Collider
     pub const COLLIDER_RADIUS: f64 = 20.0;
@@ -49,7 +50,7 @@ pub mod pickup {
 pub mod pickup_generator {
     pub const MIN_SPAWN_RADIUS: f64 = 500.0;
     pub const MAX_SPAWN_RADIUS: f64 = 1000.0;
-    pub const TIME_TO_APPEAR: f64 = 8.0;
+    pub const TIME_TO_APPEAR: f64 = 4.0;
 }
 
 pub mod offscreen_pointer {
