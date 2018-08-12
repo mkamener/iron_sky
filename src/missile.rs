@@ -64,14 +64,20 @@ impl Missile {
         &mut self,
         sprite: &mut Sprite<G2dTexture>,
         explosion_tex: &mut AnimTexture,
+        pointer: &mut Sprite<G2dTexture>,
         c: piston_window::Context,
         g: &mut G2d,
     ) -> () {
+        use offscreen;
         match self.state {
             State::Active => {
                 sprite.set_position(self.collider.pos.x, self.collider.pos.y);
                 sprite.set_rotation(self.velocity.y.atan2(self.velocity.x).to_degrees());
                 sprite.draw(c.transform, g);
+
+                if let Some((pos, deg)) = offscreen::place_pointer(self.collider.pos) {
+                    offscreen::draw_pointer(pointer, pos, deg, c, g);
+                }
             }
             State::Exploding => {
                 self.explosion.draw(explosion_tex, c, g);

@@ -67,8 +67,8 @@ fn main() {
     pickup_gen.reset_pickups(&mut pickups);
 
     // Offscreen Pointer
-    let mut spr_offscreen = load_sprite(&mut window, &assets, "offscreen_pointer.png");
-    spr_offscreen.set_scale(
+    let mut spr_pointer = load_sprite(&mut window, &assets, "offscreen_pointer.png");
+    spr_pointer.set_scale(
         settings::offscreen_pointer::SCALE,
         settings::offscreen_pointer::SCALE,
     );
@@ -89,18 +89,18 @@ fn main() {
             background.draw(height, width, c, g);
 
             for pickup in &mut pickups {
-                pickup.draw(&mut spr_pickup, c, g);
+                pickup.draw(&mut spr_pickup, &mut spr_pointer, c, g);
             }
             for missile in &mut missiles {
-                missile.draw(&mut spr_missile, &mut tex_explosion_missile, c, g);
+                missile.draw(
+                    &mut spr_missile,
+                    &mut tex_explosion_missile,
+                    &mut spr_pointer,
+                    c,
+                    g,
+                );
             }
             player.draw(&mut spr_player, &mut tex_explosion_player, c, g);
-
-            if offscreen::is_offscreen(pickups[0].collider.pos) {
-                if let Some((pos, deg)) = offscreen::place_pointer(pickups[0].collider.pos) {
-                    offscreen::draw_pointer(&mut spr_offscreen, pos, deg, c, g);
-                }
-            }
 
             // Draw debug shapes if requested
             if settings::game::DRAW_DEBUG {

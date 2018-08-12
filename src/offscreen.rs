@@ -17,7 +17,7 @@ pub fn draw_pointer(
     sprite.draw(c.transform, g);
 }
 
-pub fn is_offscreen(pos: Point) -> bool {
+fn is_offscreen(pos: Point) -> bool {
     let (screen_x, screen_y) = window::SIZE;
     let (screen_x, screen_y) = (screen_x as f64, screen_y as f64);
 

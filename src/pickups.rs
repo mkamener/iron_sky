@@ -55,15 +55,21 @@ impl Pickup {
     pub fn draw(
         &mut self,
         sprite: &mut Sprite<G2dTexture>,
+        pointer: &mut Sprite<G2dTexture>,
         c: piston_window::Context,
         g: &mut G2d,
     ) -> () {
+        use offscreen;
         match self.state {
             State::Active => {
                 self.set_rotation();
                 sprite.set_position(self.collider.pos.x, self.collider.pos.y);
                 sprite.set_rotation(self.rot);
                 sprite.draw(c.transform, g);
+
+                if let Some((pos, deg)) = offscreen::place_pointer(self.collider.pos) {
+                    offscreen::draw_pointer(pointer, pos, deg, c, g);
+                }
             }
             State::Inactive => {}
         }

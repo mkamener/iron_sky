@@ -47,8 +47,8 @@ pub mod pickup {
 }
 
 pub mod pickup_generator {
-    pub const MIN_SPAWN_RADIUS: f64 = 200.0;
-    pub const MAX_SPAWN_RADIUS: f64 = 600.0;
+    pub const MIN_SPAWN_RADIUS: f64 = 500.0;
+    pub const MAX_SPAWN_RADIUS: f64 = 800.0;
     pub const TIME_TO_APPEAR: f64 = 8.0;
 }
 
