@@ -59,7 +59,7 @@ impl Pickup {
         c: piston_window::Context,
         g: &mut G2d,
     ) -> () {
-        use offscreen;
+        use offscreen::draw_offscreen;
         match self.state {
             State::Active => {
                 self.set_rotation();
@@ -67,9 +67,7 @@ impl Pickup {
                 sprite.set_rotation(self.rot);
                 sprite.draw(c.transform, g);
 
-                if let Some((pos, deg)) = offscreen::place_pointer(self.collider.pos) {
-                    offscreen::draw_pointer(pointer, pos, deg, c, g);
-                }
+                draw_offscreen(sprite, pointer, self.collider.pos, self.rot, c, g);
             }
             State::Inactive => {}
         }

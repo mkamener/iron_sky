@@ -5,7 +5,21 @@ use piston_window::*;
 use settings::{offscreen_pointer, window};
 use sprite::Sprite;
 
-pub fn draw_pointer(
+pub fn draw_offscreen(
+    obj_spr: &mut Sprite<G2dTexture>,
+    pointer_spr: &mut Sprite<G2dTexture>,
+    obj_pos: Point,
+    obj_rot: f64,
+    c: piston_window::Context,
+    g: &mut G2d,
+) -> () {
+    if let Some((pos, rot)) = place_pointer(obj_pos) {
+        draw_pointer(pointer_spr, pos, rot, c, g);
+        draw_overlay(obj_spr, pos, obj_rot, c, g)
+    }
+}
+
+fn draw_pointer(
     sprite: &mut Sprite<G2dTexture>,
     pos: Point,
     rot: f64,
@@ -17,6 +31,23 @@ pub fn draw_pointer(
     sprite.draw(c.transform, g);
 }
 
+fn draw_overlay(
+    sprite: &mut Sprite<G2dTexture>,
+    pos: Point,
+    rot: f64,
+    c: piston_window::Context,
+    g: &mut G2d,
+) -> () {
+    let (x_scale, y_scale) = sprite.get_scale();
+    sprite.set_scale(x_scale * 0.4, y_scale * 0.4);
+    sprite.set_position(pos.x, pos.y);
+    sprite.set_rotation(rot);
+    sprite.draw(c.transform, g);
+
+    // Set scale back
+    sprite.set_scale(x_scale, y_scale);
+}
+
 fn is_offscreen(pos: Point) -> bool {
     let (screen_x, screen_y) = window::SIZE;
     let (screen_x, screen_y) = (screen_x as f64, screen_y as f64);
@@ -24,7 +55,7 @@ fn is_offscreen(pos: Point) -> bool {
     pos.x <= 0.0 || pos.y <= 0.0 || pos.x >= screen_x || pos.y >= screen_y
 }
 
-pub fn place_pointer(obj_pos: Point) -> Option<(Point, f64)> {
+fn place_pointer(obj_pos: Point) -> Option<(Point, f64)> {
     if !is_offscreen(obj_pos) {
         return None;
     }
