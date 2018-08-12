@@ -19,6 +19,20 @@ pub fn draw_offscreen(
     }
 }
 
+pub fn draw_anim_offscreen(
+    obj_anim: &mut Animation,
+    obj_anim_tex: &mut AnimTexture,
+    pointer_spr: &mut Sprite<G2dTexture>,
+    obj_pos: Point,
+    c: piston_window::Context,
+    g: &mut G2d,
+) -> () {
+    if let Some((pos, rot)) = place_pointer(obj_pos) {
+        draw_pointer(pointer_spr, pos, rot, c, g);
+        obj_anim.draw_at_pos(obj_anim_tex, pos, 0.4, c, g);
+    }
+}
+
 fn draw_pointer(
     sprite: &mut Sprite<G2dTexture>,
     pos: Point,

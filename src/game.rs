@@ -220,6 +220,33 @@ impl Animation {
         );
     }
 
+    pub fn draw_at_pos(
+        &self,
+        anim_tex: &mut AnimTexture,
+        pos: Point,
+        scale: f64,
+        c: piston_window::Context,
+        g: &mut G2d,
+    ) -> () {
+        if self.playing == false {
+            return;
+        };
+        let idx = ((self.duration / self.length) * (anim_tex.frames.len() as f64)).floor() as usize;
+        let frame = anim_tex.frames[idx];
+        let zoom = self.zoom * scale;
+        Image::new().src_rect(frame).draw(
+            &anim_tex.texture,
+            &c.draw_state,
+            c.transform
+                .trans(
+                    -0.5 * zoom * frame[2] + pos.x,
+                    -0.5 * zoom * frame[3] + pos.y,
+                )
+                .zoom(zoom),
+            g,
+        );
+    }
+
     pub fn update(&mut self, dt: f64) -> () {
         if self.playing == false {
             return;

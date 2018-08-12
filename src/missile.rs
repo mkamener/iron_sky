@@ -68,10 +68,10 @@ impl Missile {
         c: piston_window::Context,
         g: &mut G2d,
     ) -> () {
-        use offscreen::draw_offscreen;
+        use offscreen::{draw_anim_offscreen, draw_offscreen};
         match self.state {
             State::Active => {
-                let rot = self.velocity.y.atan2(self.velocity.x).to_degrees();
+                let rot = self.get_rotation();
                 sprite.set_position(self.collider.pos.x, self.collider.pos.y);
                 sprite.set_rotation(rot);
                 sprite.draw(c.transform, g);
@@ -80,6 +80,15 @@ impl Missile {
             }
             State::Exploding => {
                 self.explosion.draw(explosion_tex, c, g);
+
+                draw_anim_offscreen(
+                    &mut self.explosion,
+                    explosion_tex,
+                    pointer,
+                    self.collider.pos,
+                    c,
+                    g,
+                );
             }
             State::Inactive => {}
         }
@@ -133,6 +142,10 @@ impl Missile {
         // Update explosion
         self.explosion.update(dt);
         self.explosion.set_pos(self.collider.pos);
+    }
+
+    fn get_rotation(&self) -> f64 {
+        self.velocity.y.atan2(self.velocity.x).to_degrees()
     }
 }
 
