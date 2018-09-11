@@ -68,14 +68,23 @@ pub mod ui {
     pub const SHADOW_OFFSET: f64 = 2.0;
     pub const SHADOW_COLOR: [f32; 4] = [0.0, 0.0, 0.0, 1.0];
 
-    pub const SCORE_OFFSET: f64 = 100.0;
-    pub const SCORE_COLOR: [f32; 4] = [0.17, 0.74, 0.18, 1.0];
-    pub const SCORE_FONT_SIZE: u32 = 32;
+    pub mod game_active {
+        pub const SCORE_OFFSET: f64 = 100.0;
+        pub const SCORE_COLOR: [f32; 4] = [0.17, 0.74, 0.18, 1.0];
+        pub const SCORE_FONT_SIZE: u32 = 32;
+    }
 
-    pub const GAME_OVER_V_OFFSET: f64 = 300.0;
-    pub const GAME_OVER_H_OFFSET: f64 = 540.0;
-    pub const GAME_OVER_COLOR: [f32; 4] = [0.17, 0.74, 0.18, 1.0];
-    pub const GAME_OVER_FONT_SIZE: u32 = 48;
+    pub mod game_over {
+        pub const GAME_OVER_V_OFFSET: f64 = 300.0;
+        pub const GAME_OVER_H_OFFSET: f64 = 540.0;
+        pub const GAME_OVER_COLOR: [f32; 4] = [0.17, 0.74, 0.18, 1.0];
+        pub const GAME_OVER_FONT_SIZE: u32 = 48;
+
+        pub const SCORE_V_OFFSET: f64 = 370.0;
+        pub const SCORE_H_OFFSET: f64 = 600.0;
+        pub const SCORE_COLOR: [f32; 4] = [0.17, 0.74, 0.18, 1.0];
+        pub const SCORE_FONT_SIZE: u32 = 24;
+    }
 }
 
 pub mod background {

@@ -42,7 +42,8 @@ impl UI {
                 draw_active_score(score, font, c, g);
             }
             State::GameOver => {
-                draw_game_over(font, c, g);
+                draw_game_over_text(font, c, g);
+                draw_game_over_score(score, font, c, g);
             }
         }
     }
@@ -69,6 +70,8 @@ pub fn draw_active_score(
     c: piston_window::Context,
     g: &mut G2d,
 ) -> () {
+    use settings::ui::game_active::*;
+
     let text = &format!("Score: {}", score);
 
     // Draw shadow
@@ -81,7 +84,31 @@ pub fn draw_active_score(
     draw_text(text, transform, font, SCORE_COLOR, SCORE_FONT_SIZE, c, g);
 }
 
-pub fn draw_game_over(font: &mut Glyphs, c: piston_window::Context, g: &mut G2d) -> () {
+pub fn draw_game_over_score(
+    score: Score,
+    font: &mut Glyphs,
+    c: piston_window::Context,
+    g: &mut G2d,
+) -> () {
+    use settings::ui::game_over::*;
+
+    let text = &format!("Final Score: {}", score);
+
+    // Draw shadow
+    let transform = c.transform.trans(
+        SHADOW_OFFSET + SCORE_H_OFFSET,
+        SHADOW_OFFSET + SCORE_V_OFFSET,
+    );
+    draw_text(text, transform, font, SHADOW_COLOR, SCORE_FONT_SIZE, c, g);
+
+    // Draw score
+    let transform = c.transform.trans(SCORE_H_OFFSET, SCORE_V_OFFSET);
+    draw_text(text, transform, font, SCORE_COLOR, SCORE_FONT_SIZE, c, g);
+}
+
+pub fn draw_game_over_text(font: &mut Glyphs, c: piston_window::Context, g: &mut G2d) -> () {
+    use settings::ui::game_over::*;
+
     let text = "Game Over";
 
     // Draw shadow
