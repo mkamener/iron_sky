@@ -133,7 +133,7 @@ fn main() {
             match press_args {
                 Button::Keyboard(Key::Left) => left_key = KeyState::Pressed,
                 Button::Keyboard(Key::Right) => right_key = KeyState::Pressed,
-                Button::Keyboard(Key::R) => {
+                Button::Keyboard(Key::Space) => {
                     missile_gen.reset_missiles(&mut missiles);
                     pickup_gen.reset_pickups(&mut pickups);
                     player.reset();
