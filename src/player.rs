@@ -6,21 +6,21 @@ use sprite::Sprite;
 use traits::Collides;
 
 #[derive(Copy, Clone)]
-enum Action {
+pub enum Action {
     NoMove,
     Left,
     Right,
 }
 
 #[derive(Copy, Clone)]
-enum State {
+pub enum State {
     Active(Action),
     Exploding,
     Inactive,
 }
 
 pub struct Player {
-    state: State,
+    pub state: State,
     pub collider: Collider,
     explosion: Animation,
     rot: f64,

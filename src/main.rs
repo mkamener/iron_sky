@@ -84,6 +84,9 @@ fn main() {
     let mut left_key = KeyState::NotPressed;
     let mut right_key = KeyState::NotPressed;
 
+    // UI
+    let mut ui = ui::UI::new();
+
     // Fonts
     let font = &assets.join("fonts/Gugi-Regular.ttf");
     let mut glyphs = Glyphs::new(font, window.factory.clone(), TextureSettings::new()).unwrap();
@@ -122,7 +125,7 @@ fn main() {
             }
 
             // Draw UI
-            ui::draw_score(score, &mut glyphs, c, g);
+            ui.draw(score, &mut glyphs, c, g);
         });
 
         // Input loop
@@ -163,6 +166,7 @@ fn main() {
             background.update(&player, u.dt);
             missile_gen.update(&mut missiles, &player, u.dt);
             pickup_gen.update(&mut pickups, &player, u.dt);
+            ui.update(&player);
 
             let missile_explosion_count = explosion_collisions(&mut player, &mut missiles);
             let pickups_collected_count = collect_collisions(&player, &mut pickups);
