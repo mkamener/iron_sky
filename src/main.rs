@@ -80,6 +80,10 @@ fn main() {
     let mut left_key = KeyState::NotPressed;
     let mut right_key = KeyState::NotPressed;
 
+    // Fonts
+    let font = &assets.join("fonts/Gugi-Regular.ttf");
+    let mut glyphs = Glyphs::new(font, window.factory.clone(), TextureSettings::new()).unwrap();
+
     while let Some(e) = window.next() {
         // Render loop
         window.draw_2d(&e, |c, g| {
@@ -112,6 +116,16 @@ fn main() {
                     pickup.collider.draw_debug(c, g);
                 }
             }
+
+            // Test text drawing
+            let transform = c.transform.trans(101.0, 101.0);
+            text::Text::new_color([0.0, 0.0, 0.0, 1.0], 32)
+                .draw("Score: 100", &mut glyphs, &c.draw_state, transform, g)
+                .unwrap();
+            let transform = c.transform.trans(100.0, 100.0);
+            text::Text::new_color([0.17, 0.74, 0.18, 1.0], 32)
+                .draw("Score: 100", &mut glyphs, &c.draw_state, transform, g)
+                .unwrap();
         });
 
         // Input loop
