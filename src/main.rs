@@ -33,6 +33,9 @@ fn main() {
         .for_folder("assets")
         .unwrap();
 
+    // Score
+    let mut score: Score = 0;
+
     // Player
     let mut tex_explosion_player = AnimTexture::new(&mut window, &assets, "explosions/2.png", 8, 8);
     let mut spr_player = initialise_player_sprites(
@@ -120,11 +123,23 @@ fn main() {
             // Test text drawing
             let transform = c.transform.trans(101.0, 101.0);
             text::Text::new_color([0.0, 0.0, 0.0, 1.0], 32)
-                .draw("Score: 100", &mut glyphs, &c.draw_state, transform, g)
+                .draw(
+                    &format!("Score: {}", score),
+                    &mut glyphs,
+                    &c.draw_state,
+                    transform,
+                    g,
+                )
                 .unwrap();
             let transform = c.transform.trans(100.0, 100.0);
             text::Text::new_color([0.17, 0.74, 0.18, 1.0], 32)
-                .draw("Score: 100", &mut glyphs, &c.draw_state, transform, g)
+                .draw(
+                    &format!("Score: {}", score),
+                    &mut glyphs,
+                    &c.draw_state,
+                    transform,
+                    g,
+                )
                 .unwrap();
         });
 
@@ -137,6 +152,7 @@ fn main() {
                     missile_gen.reset_missiles(&mut missiles);
                     pickup_gen.reset_pickups(&mut pickups);
                     player.reset();
+                    score = 0;
                 }
                 _ => (),
             }
@@ -166,8 +182,11 @@ fn main() {
             missile_gen.update(&mut missiles, &player, u.dt);
             pickup_gen.update(&mut pickups, &player, u.dt);
 
-            explosion_collisions(&mut player, &mut missiles);
-            collect_collisions(&player, &mut pickups);
+            let missile_explosion_count = explosion_collisions(&mut player, &mut missiles);
+            let pickups_collected_count = collect_collisions(&player, &mut pickups);
+
+            score += (missile_explosion_count * settings::game::POINTS_PER_MISSILE)
+                + (pickups_collected_count * settings::game::POINTS_PER_PICKUP) as Score;
         }
     }
 }

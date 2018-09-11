@@ -8,6 +8,8 @@ use sprite::*;
 use std::ops::{Add, Div, Mul, Sub};
 use traits::Collides;
 
+pub type Score = u32;
+
 #[derive(Copy, Clone, PartialEq)]
 pub enum KeyState {
     Pressed,
@@ -303,9 +305,10 @@ pub fn load_texture(
     ).unwrap()
 }
 
-pub fn explosion_collisions(player: &mut Player, missiles: &mut Vec<Missile>) -> () {
+pub fn explosion_collisions(player: &mut Player, missiles: &mut Vec<Missile>) -> u32 {
     let mut missile_collisions = vec![false; missiles.len()];
     let mut player_collision = false;
+    let mut missile_explosion_count = 0;
 
     // Check for missile collisions
     for (i, obj_i) in missiles.iter().enumerate() {
@@ -329,21 +332,30 @@ pub fn explosion_collisions(player: &mut Player, missiles: &mut Vec<Missile>) ->
     for (idx, has_collided) in missile_collisions.iter().enumerate() {
         if *has_collided {
             missiles[idx].explode();
+            missile_explosion_count += 1;
         }
     }
 
     // Explode collided player
     if player_collision {
         player.explode();
+        missile_explosion_count -= 1; // Remove missile that exploded on collision with player
     }
+
+    missile_explosion_count
 }
 
-pub fn collect_collisions(player: &Player, pickups: &mut Vec<Pickup>) -> () {
+pub fn collect_collisions(player: &Player, pickups: &mut Vec<Pickup>) -> u32 {
+    let mut pickups_collected_count = 0;
+
     for pickup in pickups.iter_mut() {
         if player.collides_with(pickup) {
             pickup.collect();
+            pickups_collected_count += 1;
         }
     }
+
+    pickups_collected_count
 }
 
 #[cfg(test)]

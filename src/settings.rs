@@ -4,6 +4,10 @@ pub mod game {
 
     pub const MAX_MISSILES: u32 = 6;
     pub const MAX_PICKUPS: u32 = 4;
+
+    // Score
+    pub const POINTS_PER_MISSILE: u32 = 100;
+    pub const POINTS_PER_PICKUP: u32 = 500;
 }
 
 pub mod window {
