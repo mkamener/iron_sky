@@ -11,6 +11,7 @@ mod pickups;
 mod player;
 mod settings;
 mod traits;
+mod ui;
 
 use background::*;
 use game::*;
@@ -120,27 +121,8 @@ fn main() {
                 }
             }
 
-            // Test text drawing
-            let transform = c.transform.trans(101.0, 101.0);
-            text::Text::new_color([0.0, 0.0, 0.0, 1.0], 32)
-                .draw(
-                    &format!("Score: {}", score),
-                    &mut glyphs,
-                    &c.draw_state,
-                    transform,
-                    g,
-                )
-                .unwrap();
-            let transform = c.transform.trans(100.0, 100.0);
-            text::Text::new_color([0.17, 0.74, 0.18, 1.0], 32)
-                .draw(
-                    &format!("Score: {}", score),
-                    &mut glyphs,
-                    &c.draw_state,
-                    transform,
-                    g,
-                )
-                .unwrap();
+            // Draw UI
+            ui::draw_score(score, &mut glyphs, c, g);
         });
 
         // Input loop
