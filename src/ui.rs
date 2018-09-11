@@ -13,20 +13,25 @@ enum State {
 
 pub struct UI {
     state: State,
+    game_over_tween: Tween,
 }
 
 impl UI {
     pub fn new() -> Self {
         UI {
             state: State::GameActive,
+            game_over_tween: Tween::new(0.0, 1.0, game_over::FADE_IN_LENGTH, false),
         }
     }
 
-    pub fn update(&mut self, player: &player::Player) -> () {
+    pub fn update(&mut self, player: &player::Player, dt: f64) -> () {
         match player.state {
-            player::State::Active(_) => self.state = State::GameActive,
-            player::State::Exploding => self.state = State::GameActive,
-            player::State::Inactive => self.state = State::GameOver,
+            player::State::Active(_) => self.go_to_game_active(),
+            player::State::Exploding => self.go_to_game_active(),
+            player::State::Inactive => {
+                self.go_to_game_over();
+                self.game_over_tween.update(dt);
+            }
         }
     }
 
@@ -42,8 +47,28 @@ impl UI {
                 draw_active_score(score, font, c, g);
             }
             State::GameOver => {
-                draw_game_over_text(font, c, g);
-                draw_game_over_score(score, font, c, g);
+                draw_game_over_text(font, self.game_over_tween.get_val(), c, g);
+                draw_game_over_score(score, font, self.game_over_tween.get_val(), c, g);
+            }
+        }
+    }
+
+    fn go_to_game_over(&mut self) -> () {
+        match self.state {
+            State::GameOver => (),
+            State::GameActive => {
+                self.game_over_tween.reset();
+                self.state = State::GameOver;
+            }
+        }
+    }
+
+    fn go_to_game_active(&mut self) -> () {
+        match self.state {
+            State::GameActive => (),
+            State::GameOver => {
+                self.game_over_tween.stop();
+                self.state = State::GameActive;
             }
         }
     }
@@ -87,6 +112,7 @@ pub fn draw_active_score(
 pub fn draw_game_over_score(
     score: Score,
     font: &mut Glyphs,
+    opacity: f64,
     c: piston_window::Context,
     g: &mut G2d,
 ) -> () {
@@ -99,14 +125,35 @@ pub fn draw_game_over_score(
         SHADOW_OFFSET + SCORE_H_OFFSET,
         SHADOW_OFFSET + SCORE_V_OFFSET,
     );
-    draw_text(text, transform, font, SHADOW_COLOR, SCORE_FONT_SIZE, c, g);
+    draw_text(
+        text,
+        transform,
+        font,
+        set_opacity(SHADOW_COLOR, opacity as f32),
+        SCORE_FONT_SIZE,
+        c,
+        g,
+    );
 
     // Draw score
     let transform = c.transform.trans(SCORE_H_OFFSET, SCORE_V_OFFSET);
-    draw_text(text, transform, font, SCORE_COLOR, SCORE_FONT_SIZE, c, g);
+    draw_text(
+        text,
+        transform,
+        font,
+        set_opacity(SCORE_COLOR, opacity as f32),
+        SCORE_FONT_SIZE,
+        c,
+        g,
+    );
 }
 
-pub fn draw_game_over_text(font: &mut Glyphs, c: piston_window::Context, g: &mut G2d) -> () {
+pub fn draw_game_over_text(
+    font: &mut Glyphs,
+    opacity: f64,
+    c: piston_window::Context,
+    g: &mut G2d,
+) -> () {
     use settings::ui::game_over::*;
 
     let text = "Game Over";
@@ -120,7 +167,7 @@ pub fn draw_game_over_text(font: &mut Glyphs, c: piston_window::Context, g: &mut
         text,
         transform,
         font,
-        SHADOW_COLOR,
+        set_opacity(SHADOW_COLOR, opacity as f32),
         GAME_OVER_FONT_SIZE,
         c,
         g,
@@ -132,9 +179,15 @@ pub fn draw_game_over_text(font: &mut Glyphs, c: piston_window::Context, g: &mut
         text,
         transform,
         font,
-        GAME_OVER_COLOR,
+        set_opacity(GAME_OVER_COLOR, opacity as f32),
         GAME_OVER_FONT_SIZE,
         c,
         g,
     );
+}
+
+fn set_opacity(color: [f32; 4], opacity: f32) -> [f32; 4] {
+    let mut new_color = color;
+    new_color[3] = opacity as f32;
+    new_color
 }

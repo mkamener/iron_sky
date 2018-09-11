@@ -166,7 +166,7 @@ fn main() {
             background.update(&player, u.dt);
             missile_gen.update(&mut missiles, &player, u.dt);
             pickup_gen.update(&mut pickups, &player, u.dt);
-            ui.update(&player);
+            ui.update(&player, u.dt);
 
             let missile_explosion_count = explosion_collisions(&mut player, &mut missiles);
             let pickups_collected_count = collect_collisions(&player, &mut pickups);
