@@ -49,6 +49,7 @@ impl UI {
             State::GameOver => {
                 draw_game_over_text(font, self.game_over_tween.get_val(), c, g);
                 draw_game_over_score(score, font, self.game_over_tween.get_val(), c, g);
+                draw_restart_text(font, self.game_over_tween.get_val(), c, g);
             }
         }
     }
@@ -74,7 +75,7 @@ impl UI {
     }
 }
 
-pub fn draw_text(
+fn draw_text(
     text: &str,
     transform: [[f64; 3]; 2],
     font: &mut Glyphs,
@@ -89,7 +90,7 @@ pub fn draw_text(
         .unwrap();
 }
 
-pub fn draw_active_score(
+fn draw_active_score(
     score: Score,
     font: &mut Glyphs,
     c: piston_window::Context,
@@ -109,7 +110,7 @@ pub fn draw_active_score(
     draw_text(text, transform, font, SCORE_COLOR, SCORE_FONT_SIZE, c, g);
 }
 
-pub fn draw_game_over_score(
+fn draw_game_over_score(
     score: Score,
     font: &mut Glyphs,
     opacity: f64,
@@ -148,7 +149,7 @@ pub fn draw_game_over_score(
     );
 }
 
-pub fn draw_game_over_text(
+fn draw_game_over_text(
     font: &mut Glyphs,
     opacity: f64,
     c: piston_window::Context,
@@ -181,6 +182,44 @@ pub fn draw_game_over_text(
         font,
         set_opacity(GAME_OVER_COLOR, opacity as f32),
         GAME_OVER_FONT_SIZE,
+        c,
+        g,
+    );
+}
+
+fn draw_restart_text(
+    font: &mut Glyphs,
+    opacity: f64,
+    c: piston_window::Context,
+    g: &mut G2d,
+) -> () {
+    use settings::ui::game_over::*;
+
+    let text = "Press SPACE to play again";
+
+    // Draw shadow
+    let transform = c.transform.trans(
+        SHADOW_OFFSET + RESTART_H_OFFSET,
+        SHADOW_OFFSET + RESTART_V_OFFSET,
+    );
+    draw_text(
+        text,
+        transform,
+        font,
+        set_opacity(SHADOW_COLOR, opacity as f32),
+        RESTART_FONT_SIZE,
+        c,
+        g,
+    );
+
+    // Draw game over
+    let transform = c.transform.trans(RESTART_H_OFFSET, RESTART_V_OFFSET);
+    draw_text(
+        text,
+        transform,
+        font,
+        set_opacity(RESTART_COLOR, opacity as f32),
+        RESTART_FONT_SIZE,
         c,
         g,
     );

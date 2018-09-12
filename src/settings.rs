@@ -85,6 +85,11 @@ pub mod ui {
         pub const SCORE_COLOR: [f32; 4] = [0.17, 0.74, 0.18, 1.0];
         pub const SCORE_FONT_SIZE: u32 = 24;
 
+        pub const RESTART_V_OFFSET: f64 = 540.0;
+        pub const RESTART_H_OFFSET: f64 = 500.0;
+        pub const RESTART_COLOR: [f32; 4] = [0.17, 0.74, 0.18, 1.0];
+        pub const RESTART_FONT_SIZE: u32 = 24;
+
         pub const FADE_IN_LENGTH: f64 = 0.5;
     }
 }
