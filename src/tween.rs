@@ -9,7 +9,7 @@ pub struct Tween {
 }
 
 impl Tween {
-    pub fn new(keyframes: Vec<KeyFrame>, length: f64, looped: bool, playing: bool) -> Tween {
+    pub fn new(keyframes: Vec<KeyFrame>, length: f64, looped: bool) -> Tween {
         assert!(length != 0.0);
         assert!(keyframes.len() >= 2);
         Tween {
@@ -17,7 +17,7 @@ impl Tween {
             length,
             duration: 0.0,
             looped,
-            playing,
+            playing: false,
         }
     }
 
@@ -27,8 +27,15 @@ impl Tween {
         };
         self.duration += dt;
         if self.duration > self.length {
-            self.playing = false;
-            self.duration = self.length;
+            match self.looped {
+                true => {
+                    self.duration -= self.length;
+                }
+                false => {
+                    self.playing = false;
+                    self.duration = self.length;
+                }
+            }
         }
     }
 

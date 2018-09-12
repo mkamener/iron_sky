@@ -24,8 +24,7 @@ impl UI {
             game_over_tween: Tween::new(
                 vec![(0.0, 0.0), (1.0, 1.0)],
                 game_over::FADE_IN_LENGTH,
-                false,
-                false,
+                true,
             ),
         }
     }
