@@ -15,6 +15,7 @@ enum State {
 pub struct UI {
     state: State,
     game_over_tween: Tween,
+    restart_tween: Tween,
 }
 
 impl UI {
@@ -24,6 +25,11 @@ impl UI {
             game_over_tween: Tween::new(
                 vec![(0.0, 0.0), (1.0, 1.0)],
                 game_over::FADE_IN_LENGTH,
+                false,
+            ),
+            restart_tween: Tween::new(
+                vec![(0.0, 0.0), (0.4, 1.0), (0.5, 1.0), (0.9, 0.0), (1.0, 0.0)],
+                game_over::FADE_IN_OUT_LENGTH,
                 true,
             ),
         }
@@ -36,6 +42,7 @@ impl UI {
             player::State::Inactive => {
                 self.go_to_game_over();
                 self.game_over_tween.update(dt);
+                self.restart_tween.update(dt);
             }
         }
     }
@@ -54,7 +61,7 @@ impl UI {
             State::GameOver => {
                 draw_game_over_text(font, self.game_over_tween.get_val(), c, g);
                 draw_game_over_score(score, font, self.game_over_tween.get_val(), c, g);
-                draw_restart_text(font, self.game_over_tween.get_val(), c, g);
+                draw_restart_text(font, self.restart_tween.get_val(), c, g);
             }
         }
     }
@@ -64,6 +71,7 @@ impl UI {
             State::GameOver => (),
             State::GameActive => {
                 self.game_over_tween.reset();
+                self.restart_tween.reset();
                 self.state = State::GameOver;
             }
         }
@@ -74,6 +82,7 @@ impl UI {
             State::GameActive => (),
             State::GameOver => {
                 self.game_over_tween.stop();
+                self.restart_tween.stop();
                 self.state = State::GameActive;
             }
         }

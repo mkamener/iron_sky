@@ -55,7 +55,7 @@ impl Tween {
                     let frac = (total_frac - from.0) / (to.0 - from.0);
 
                     // Calculate the current interpolated value
-                    frac * (to.1 - from.1)
+                    frac * (to.1 - from.1) + from.1
                 }
                 Some(_) => self.keyframes[0].1,
                 None => self.keyframes.last().unwrap().1,
