@@ -11,6 +11,7 @@ mod pickups;
 mod player;
 mod settings;
 mod traits;
+mod tween;
 mod ui;
 
 use background::*;

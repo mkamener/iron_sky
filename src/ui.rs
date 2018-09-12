@@ -4,6 +4,7 @@ use game::*;
 use piston_window::*;
 use player;
 use settings::ui::*;
+use tween::*;
 
 #[derive(Copy, Clone, PartialEq)]
 enum State {
@@ -20,7 +21,12 @@ impl UI {
     pub fn new() -> Self {
         UI {
             state: State::GameActive,
-            game_over_tween: Tween::new(0.0, 1.0, game_over::FADE_IN_LENGTH, false),
+            game_over_tween: Tween::new(
+                vec![(0.0, 0.0), (1.0, 1.0)],
+                game_over::FADE_IN_LENGTH,
+                false,
+                false,
+            ),
         }
     }
 

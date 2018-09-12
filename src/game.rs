@@ -278,55 +278,6 @@ impl Animation {
     }
 }
 
-pub struct Tween {
-    from: f64,
-    to: f64,
-    length: f64,
-    duration: f64,
-    playing: bool,
-}
-
-impl Tween {
-    pub fn new(from: f64, to: f64, length: f64, playing: bool) -> Tween {
-        Tween {
-            from,
-            to,
-            length,
-            duration: 0.0,
-            playing,
-        }
-    }
-
-    pub fn update(&mut self, dt: f64) -> () {
-        if self.playing == false {
-            return;
-        };
-        self.duration += dt;
-        if self.duration > self.length {
-            self.playing = false;
-            self.duration = self.length;
-        }
-    }
-
-    pub fn get_val(&self) -> f64 {
-        if self.playing {
-            (self.to - self.from) * (self.duration / self.length) + self.from
-        } else {
-            self.to
-        }
-    }
-
-    pub fn reset(&mut self) -> () {
-        self.playing = true;
-        self.duration = 0.0;
-    }
-
-    pub fn stop(&mut self) -> () {
-        self.playing = false;
-        self.duration = self.length;
-    }
-}
-
 pub fn load_sprite(
     window: &mut PistonWindow,
     folder: &::std::path::PathBuf,
