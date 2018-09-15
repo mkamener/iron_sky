@@ -110,3 +110,37 @@ impl Tween {
         self.duration = self.length;
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn test_easing_function(input: Vec<f64>, expected_output: Vec<f64>, f: EasingFn) {
+        input
+            .into_iter()
+            .map(f)
+            .zip(expected_output.into_iter())
+            .for_each(|(input, expected_output)| assert_approx_eq!(input, expected_output, 1e-4));
+    }
+
+    #[test]
+    fn it_should_calcualate_correct_ease_in() {
+        let input = vec![0.0, 0.25, 0.5, 0.75, 1.0];
+        let expected_output = vec![0.0, 0.0156, 0.125, 0.4219, 1.0];
+        test_easing_function(input, expected_output, ease_in);
+    }
+
+    #[test]
+    fn it_should_calcualate_correct_ease_out() {
+        let input = vec![0.0, 0.25, 0.5, 0.75, 1.0];
+        let expected_output = vec![0.0, 0.5781, 0.875, 0.9844, 1.0];
+        test_easing_function(input, expected_output, ease_out);
+    }
+
+    #[test]
+    fn it_should_calcualate_correct_ease_in_out() {
+        let input = vec![0.0, 0.25, 0.5, 0.75, 1.0];
+        let expected_output = vec![0.0, 0.0625, 0.5, 0.9375, 1.0];
+        test_easing_function(input, expected_output, ease_in_out);
+    }
+}
