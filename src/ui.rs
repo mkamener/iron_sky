@@ -25,11 +25,13 @@ impl UI {
             game_over_tween: Tween::new(
                 vec![(0.0, 0.0), (1.0, 1.0)],
                 game_over::FADE_IN_LENGTH,
+                Easing::EaseOut,
                 false,
             ),
             restart_tween: Tween::new(
-                vec![(0.0, 0.0), (0.4, 1.0), (0.5, 1.0), (0.9, 0.0), (1.0, 0.0)],
+                vec![(0.0, 0.0), (0.5, 1.0), (1.0, 0.0)],
                 game_over::FADE_IN_OUT_LENGTH,
+                Easing::EaseInOut,
                 true,
             ),
         }

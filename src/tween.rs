@@ -1,21 +1,55 @@
 pub type KeyFrame = (f64, f64); // (frac, value)
 
+pub enum Easing {
+    EaseIn,
+    EaseOut,
+    EaseInOut,
+}
+
+type EasingFn = fn(f64) -> f64;
+
+fn ease_in(x: f64) -> f64 {
+    x.powi(3)
+}
+
+fn ease_out(x: f64) -> f64 {
+    (x - 1.0).powi(3) + 1.0
+}
+
+fn ease_in_out(x: f64) -> f64 {
+    if x < 0.5 {
+        (x * 2.0).powi(3) * 0.5
+    } else {
+        (x * 2.0 - 2.0).powi(3) * 0.5 + 1.0
+    }
+}
+
+fn get_easing_fn(easing: Easing) -> EasingFn {
+    match easing {
+        Easing::EaseIn => ease_in,
+        Easing::EaseOut => ease_out,
+        Easing::EaseInOut => ease_in_out,
+    }
+}
+
 pub struct Tween {
     keyframes: Vec<KeyFrame>,
     length: f64,
     duration: f64,
+    easing_fn: EasingFn,
     looped: bool,
     playing: bool,
 }
 
 impl Tween {
-    pub fn new(keyframes: Vec<KeyFrame>, length: f64, looped: bool) -> Tween {
+    pub fn new(keyframes: Vec<KeyFrame>, length: f64, easing: Easing, looped: bool) -> Tween {
         assert!(length != 0.0);
         assert!(keyframes.len() >= 2);
         Tween {
             keyframes,
             length,
             duration: 0.0,
+            easing_fn: get_easing_fn(easing),
             looped,
             playing: false,
         }
@@ -54,8 +88,8 @@ impl Tween {
                     let to = self.keyframes[idx];
                     let frac = (total_frac - from.0) / (to.0 - from.0);
 
-                    // Calculate the current interpolated value
-                    frac * (to.1 - from.1) + from.1
+                    // Calculate the current interpolated value using the desired easing
+                    (self.easing_fn)(frac) * (to.1 - from.1) + from.1
                 }
                 Some(_) => self.keyframes[0].1,
                 None => self.keyframes.last().unwrap().1,
