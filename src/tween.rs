@@ -1,5 +1,6 @@
 pub type KeyFrame = (f64, f64); // (frac, value)
 
+#[allow(dead_code)]
 pub enum Easing {
     EaseIn,
     EaseOut,
