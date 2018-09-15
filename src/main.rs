@@ -1,6 +1,3 @@
-#[macro_use]
-extern crate assert_approx_eq;
-
 extern crate find_folder;
 extern crate piston_window;
 extern crate rand;
@@ -180,3 +177,7 @@ fn main() {
         }
     }
 }
+
+#[cfg(test)]
+#[macro_use]
+extern crate assert_approx_eq;
