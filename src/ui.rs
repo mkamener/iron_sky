@@ -56,13 +56,11 @@ impl UI {
         c: piston_window::Context,
         g: &mut G2d,
     ) -> () {
+        draw_score(score, font, c, g);
         match self.state {
-            State::GameActive => {
-                draw_active_score(score, font, c, g);
-            }
+            State::GameActive => {}
             State::GameOver => {
                 draw_game_over_text(font, self.game_over_tween.get_val(), c, g);
-                draw_game_over_score(score, font, self.game_over_tween.get_val(), c, g);
                 draw_restart_text(font, self.restart_tween.get_val(), c, g);
             }
         }
@@ -106,63 +104,19 @@ fn draw_text(
         .unwrap();
 }
 
-fn draw_active_score(
-    score: Score,
-    font: &mut Glyphs,
-    c: piston_window::Context,
-    g: &mut G2d,
-) -> () {
-    use settings::ui::game_active::*;
-
+fn draw_score(score: Score, font: &mut Glyphs, c: piston_window::Context, g: &mut G2d) -> () {
     let text = &format!("Score: {}", score);
-
-    // Draw shadow
-    let transform = c.transform
-        .trans(SHADOW_OFFSET + SCORE_OFFSET, SHADOW_OFFSET + SCORE_OFFSET);
-    draw_text(text, transform, font, SHADOW_COLOR, SCORE_FONT_SIZE, c, g);
-
-    // Draw score
-    let transform = c.transform.trans(SCORE_OFFSET, SCORE_OFFSET);
-    draw_text(text, transform, font, SCORE_COLOR, SCORE_FONT_SIZE, c, g);
-}
-
-fn draw_game_over_score(
-    score: Score,
-    font: &mut Glyphs,
-    opacity: f64,
-    c: piston_window::Context,
-    g: &mut G2d,
-) -> () {
-    use settings::ui::game_over::*;
-
-    let text = &format!("Final Score: {}", score);
 
     // Draw shadow
     let transform = c.transform.trans(
         SHADOW_OFFSET + SCORE_H_OFFSET,
         SHADOW_OFFSET + SCORE_V_OFFSET,
     );
-    draw_text(
-        text,
-        transform,
-        font,
-        set_opacity(SHADOW_COLOR, opacity as f32),
-        SCORE_FONT_SIZE,
-        c,
-        g,
-    );
+    draw_text(text, transform, font, SHADOW_COLOR, SCORE_FONT_SIZE, c, g);
 
     // Draw score
     let transform = c.transform.trans(SCORE_H_OFFSET, SCORE_V_OFFSET);
-    draw_text(
-        text,
-        transform,
-        font,
-        set_opacity(SCORE_COLOR, opacity as f32),
-        SCORE_FONT_SIZE,
-        c,
-        g,
-    );
+    draw_text(text, transform, font, SCORE_COLOR, SCORE_FONT_SIZE, c, g);
 }
 
 fn draw_game_over_text(
