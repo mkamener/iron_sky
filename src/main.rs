@@ -1,4 +1,5 @@
 extern crate find_folder;
+extern crate fps_counter;
 extern crate piston_window;
 extern crate rand;
 extern crate sprite;
@@ -36,6 +37,13 @@ fn main() {
         .for_folder("assets")
         .unwrap();
 
+    window.set_ups_reset(0);
+
+    // FPS counter
+    let mut fps_counter = fps_counter::FPSCounter::new();
+    let mut ups_counter = fps_counter::FPSCounter::new();
+    let mut ups: usize = 0;
+
     // Score
     let mut score: Score = 0;
     let mut score_ticker = Tween::new(
@@ -47,7 +55,7 @@ fn main() {
             (0.02703, 1900.0),
             (1.0, 108000.0),
         ],
-        3700.0,
+        7500.0,
         Easing::Linear,
         false,
     );
@@ -138,8 +146,9 @@ fn main() {
             }
             player.draw(&mut spr_player, &mut tex_explosion_player, c, g);
 
-            // Draw debug shapes if requested
+            // Debugging
             if settings::game::DRAW_DEBUG {
+                // Draw collision shapes
                 player.collider.draw_debug(c, g);
                 for missile in &mut missiles {
                     missile.collider.draw_debug(c, g);
@@ -147,6 +156,30 @@ fn main() {
                 for pickup in &mut pickups {
                     pickup.collider.draw_debug(c, g);
                 }
+                // UPS Counter
+                let transform = c.transform.trans(5.0, 25.0);
+                text::Text::new_color([1.0, 0.0, 0.0, 1.0], 16)
+                    .round()
+                    .draw(
+                        &("ups: ".to_owned() + &ups.to_string()),
+                        &mut glyphs,
+                        &c.draw_state,
+                        transform,
+                        g,
+                    )
+                    .unwrap();
+                // FPS Counter
+                let transform = c.transform.trans(5.0, 50.0);
+                text::Text::new_color([1.0, 0.0, 0.0, 1.0], 16)
+                    .round()
+                    .draw(
+                        &("fps: ".to_owned() + &fps_counter.tick().to_string()),
+                        &mut glyphs,
+                        &c.draw_state,
+                        transform,
+                        g,
+                    )
+                    .unwrap();
             }
 
             // Draw UI
@@ -181,6 +214,10 @@ fn main() {
 
         // Update loop
         if let Some(u) = e.update_args() {
+            if settings::game::DRAW_DEBUG {
+                ups = ups_counter.tick();
+            }
+
             player.update(u.dt);
             for missile in &mut missiles {
                 missile.update(&player, u.dt);

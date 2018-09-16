@@ -15,22 +15,22 @@ pub mod window {
 }
 
 pub mod player {
-    pub const SPEED: f64 = 400.0;
-    pub const ANGULAR_VELOCITY: f64 = 240.0; // Degrees per second
+    pub const SPEED: f64 = 200.0;
+    pub const ANGULAR_VELOCITY: f64 = 120.0; // Degrees per second
 
     // Collider
     pub const COLLIDER_RADIUS: f64 = 16.0;
 
     // Explosion Settings
-    pub const EXPLOSION_LENGTH: f64 = 1.0;
+    pub const EXPLOSION_LENGTH: f64 = 2.0;
     pub const EXPLOSION_SCALE: f64 = 1.0;
 
     pub const SCALE: f64 = 0.5;
 }
 
 pub mod missile {
-    pub const MAX_SPEED: f64 = 750.0;
-    pub const ACCELERATION: f64 = 1750.0;
+    pub const MAX_SPEED: f64 = 370.0;
+    pub const ACCELERATION: f64 = 440.0;
     pub const POINTER_COLOR: [f32; 3] = [0.74, 0.84, 0.86];
     pub const SCALE: f64 = 0.5;
 
@@ -38,26 +38,26 @@ pub mod missile {
     pub const COLLIDER_RADIUS: f64 = 10.0;
 
     // Explosion Settings
-    pub const EXPLOSION_LENGTH: f64 = 0.5;
+    pub const EXPLOSION_LENGTH: f64 = 1.0;
     pub const EXPLOSION_SCALE: f64 = 0.7;
 }
 
 pub mod missile_generator {
     pub const SPAWN_RADIUS: f64 = 1200.0;
-    pub const TIME_TO_APPEAR: f64 = 5.0;
+    pub const TIME_TO_APPEAR: f64 = 10.0;
 }
 
 pub mod pickup {
-    pub const ROTATION_PERIOD: f64 = 4.0;
-    pub const MAX_TIME: f64 = 10.0;
+    pub const ROTATION_PERIOD: f64 = 8.0;
+    pub const MAX_TIME: f64 = 20.0;
     pub const SCALE: f64 = 0.15;
     pub const POINTER_COLOR: [f32; 3] = [0.92, 0.99, 1.0];
 
-    pub const COLLECT_FADE_OUT: f64 = 0.5;
-    pub const COLLECT_ROTATION_PERIOD: f64 = 0.4;
+    pub const COLLECT_FADE_OUT: f64 = 1.0;
+    pub const COLLECT_ROTATION_PERIOD: f64 = 0.8;
     pub const COLLECT_SCALE: f64 = 0.4;
 
-    pub const DISAPPEAR_FADE_OUT: f64 = 0.2;
+    pub const DISAPPEAR_FADE_OUT: f64 = 0.4;
 
     // Collider
     pub const COLLIDER_RADIUS: f64 = 10.0;
@@ -66,7 +66,7 @@ pub mod pickup {
 pub mod pickup_generator {
     pub const MIN_SPAWN_RADIUS: f64 = 500.0;
     pub const MAX_SPAWN_RADIUS: f64 = 1000.0;
-    pub const TIME_TO_APPEAR: f64 = 4.0;
+    pub const TIME_TO_APPEAR: f64 = 8.0;
 }
 
 pub mod offscreen_pointer {
@@ -91,14 +91,14 @@ pub mod ui {
         pub const GAME_OVER_COLOR: [f32; 4] = [0.17, 0.74, 0.18, 1.0];
         pub const GAME_OVER_FONT_SIZE: u32 = 72;
 
-        pub const FADE_IN_LENGTH: f64 = 0.5;
+        pub const FADE_IN_LENGTH: f64 = 1.0;
 
         pub const RESTART_V_OFFSET: f64 = 540.0;
         pub const RESTART_H_OFFSET: f64 = 500.0;
         pub const RESTART_COLOR: [f32; 4] = [0.17, 0.74, 0.18, 1.0];
         pub const RESTART_FONT_SIZE: u32 = 24;
 
-        pub const FADE_IN_OUT_LENGTH: f64 = 1.5;
+        pub const FADE_IN_OUT_LENGTH: f64 = 3.0;
     }
 }
 
