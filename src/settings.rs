@@ -15,8 +15,8 @@ pub mod window {
 }
 
 pub mod player {
-    pub const SPEED: f64 = 200.0;
-    pub const ANGULAR_VELOCITY: f64 = 120.0; // Degrees per second
+    pub const SPEED: f64 = 220.0;
+    pub const ANGULAR_VELOCITY: f64 = 130.0; // Degrees per second
 
     // Collider
     pub const COLLIDER_RADIUS: f64 = 16.0;
@@ -29,8 +29,8 @@ pub mod player {
 }
 
 pub mod missile {
-    pub const MAX_SPEED: f64 = 370.0;
-    pub const ACCELERATION: f64 = 440.0;
+    pub const MAX_SPEED: f64 = 390.0;
+    pub const ACCELERATION: f64 = 445.0;
     pub const POINTER_COLOR: [f32; 3] = [0.74, 0.84, 0.86];
     pub const SCALE: f64 = 0.5;
 
@@ -53,8 +53,8 @@ pub mod pickup {
     pub const SCALE: f64 = 0.15;
     pub const POINTER_COLOR: [f32; 3] = [0.92, 0.99, 1.0];
 
-    pub const COLLECT_FADE_OUT: f64 = 1.0;
-    pub const COLLECT_ROTATION_PERIOD: f64 = 0.8;
+    pub const COLLECT_FADE_OUT: f64 = 0.8;
+    pub const COLLECT_ROTATION_PERIOD: f64 = 0.6;
     pub const COLLECT_SCALE: f64 = 0.4;
 
     pub const DISAPPEAR_FADE_OUT: f64 = 0.4;
