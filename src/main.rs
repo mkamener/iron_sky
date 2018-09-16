@@ -20,6 +20,7 @@ use missile::*;
 use pickups::*;
 use piston_window::*;
 use player::*;
+use tween::*;
 
 fn main() {
     let (width, height) = settings::window::SIZE;
@@ -37,6 +38,20 @@ fn main() {
 
     // Score
     let mut score: Score = 0;
+    let mut score_ticker = Tween::new(
+        vec![
+            (0.0, 0.0),
+            (0.00270, 100.0),
+            (0.00676, 300.0),
+            (0.01351, 700.0),
+            (0.02703, 1900.0),
+            (1.0, 108000.0),
+        ],
+        3700.0,
+        Easing::Linear,
+        false,
+    );
+    score_ticker.reset();
 
     // Player
     let mut tex_explosion_player = AnimTexture::new(&mut window, &assets, "explosions/2.png", 8, 8);
@@ -97,6 +112,10 @@ fn main() {
     let font = &assets.join("fonts/Gugi-Regular.ttf");
     let mut glyphs = Glyphs::new(font, window.factory.clone(), TextureSettings::new()).unwrap();
 
+    fn get_score_in_tens(tw: &Tween) -> Score {
+        (tw.get_val() / 10.0).floor() as u32 * 10 as Score
+    }
+
     while let Some(e) = window.next() {
         // Render loop
         window.draw_2d(&e, |c, g| {
@@ -131,7 +150,7 @@ fn main() {
             }
 
             // Draw UI
-            ui.draw(score, &mut glyphs, c, g);
+            ui.draw(score + get_score_in_tens(&score_ticker), &mut glyphs, c, g);
         });
 
         // Input loop
@@ -143,6 +162,7 @@ fn main() {
                     missile_gen.reset_missiles(&mut missiles);
                     pickup_gen.reset_pickups(&mut pickups);
                     player.reset();
+                    score_ticker.reset();
                     score = 0;
                 }
                 _ => (),
@@ -176,6 +196,10 @@ fn main() {
 
             let missile_explosion_count = explosion_collisions(&mut player, &mut missiles);
             let pickups_collected_count = collect_collisions(&player, &mut pickups);
+
+            if player.is_active() {
+                score_ticker.update(u.dt);
+            }
 
             score += (missile_explosion_count * settings::game::POINTS_PER_MISSILE)
                 + (pickups_collected_count * settings::game::POINTS_PER_PICKUP) as Score;
