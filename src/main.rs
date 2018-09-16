@@ -50,7 +50,7 @@ fn main() {
         Collider::new(centre, settings::player::COLLIDER_RADIUS),
         Animation::new(
             settings::player::EXPLOSION_LENGTH,
-            settings::player::EXPLOSION_ZOOM,
+            settings::player::EXPLOSION_SCALE,
         ),
     );
 

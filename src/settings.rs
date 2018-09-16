@@ -23,7 +23,7 @@ pub mod player {
 
     // Explosion Settings
     pub const EXPLOSION_LENGTH: f64 = 1.0;
-    pub const EXPLOSION_ZOOM: f64 = 1.0;
+    pub const EXPLOSION_SCALE: f64 = 1.0;
 
     pub const SCALE: f64 = 0.5;
 }
@@ -31,17 +31,15 @@ pub mod player {
 pub mod missile {
     pub const MAX_SPEED: f64 = 750.0;
     pub const ACCELERATION: f64 = 1750.0;
+    pub const POINTER_COLOR: [f32; 3] = [0.74, 0.84, 0.86];
+    pub const SCALE: f64 = 0.5;
 
     // Collider
     pub const COLLIDER_RADIUS: f64 = 10.0;
 
     // Explosion Settings
     pub const EXPLOSION_LENGTH: f64 = 0.5;
-    pub const EXPLOSION_ZOOM: f64 = 0.7;
-
-    pub const POINTER_COLOR: [f32; 3] = [0.74, 0.84, 0.86];
-
-    pub const SCALE: f64 = 0.5;
+    pub const EXPLOSION_SCALE: f64 = 0.7;
 }
 
 pub mod missile_generator {
@@ -53,17 +51,16 @@ pub mod pickup {
     pub const ROTATION_PERIOD: f64 = 4.0;
     pub const MAX_TIME: f64 = 10.0;
     pub const SCALE: f64 = 0.15;
+    pub const POINTER_COLOR: [f32; 3] = [0.92, 0.99, 1.0];
 
     pub const COLLECT_FADE_OUT: f64 = 0.5;
     pub const COLLECT_ROTATION_PERIOD: f64 = 0.4;
-    pub const COLLECT_SCALE: f64 = 0.25;
+    pub const COLLECT_SCALE: f64 = 0.4;
 
     pub const DISAPPEAR_FADE_OUT: f64 = 0.2;
 
     // Collider
     pub const COLLIDER_RADIUS: f64 = 10.0;
-
-    pub const POINTER_COLOR: [f32; 3] = [0.92, 0.99, 1.0];
 }
 
 pub mod pickup_generator {

@@ -189,17 +189,17 @@ pub struct Animation {
     length: f64,
     duration: f64,
     playing: bool,
-    zoom: f64,
+    scale: f64,
 }
 
 impl Animation {
-    pub fn new(length: f64, zoom: f64) -> Animation {
+    pub fn new(length: f64, scale: f64) -> Animation {
         Animation {
             pos: Point::new(0.0, 0.0),
             length: length,
             duration: 0.0,
             playing: false,
-            zoom: zoom,
+            scale: scale,
         }
     }
 
@@ -214,10 +214,10 @@ impl Animation {
             &c.draw_state,
             c.transform
                 .trans(
-                    -0.5 * self.zoom * frame[2] + self.pos.x,
-                    -0.5 * self.zoom * frame[3] + self.pos.y,
+                    -0.5 * self.scale * frame[2] + self.pos.x,
+                    -0.5 * self.scale * frame[3] + self.pos.y,
                 )
-                .zoom(self.zoom),
+                .zoom(self.scale),
             g,
         );
     }
@@ -235,16 +235,16 @@ impl Animation {
         };
         let idx = ((self.duration / self.length) * (anim_tex.frames.len() as f64)).floor() as usize;
         let frame = anim_tex.frames[idx];
-        let zoom = self.zoom * scale;
+        let final_scale = self.scale * scale;
         Image::new().src_rect(frame).draw(
             &anim_tex.texture,
             &c.draw_state,
             c.transform
                 .trans(
-                    -0.5 * zoom * frame[2] + pos.x,
-                    -0.5 * zoom * frame[3] + pos.y,
+                    -0.5 * final_scale * frame[2] + pos.x,
+                    -0.5 * final_scale * frame[3] + pos.y,
                 )
-                .zoom(zoom),
+                .zoom(final_scale),
             g,
         );
     }

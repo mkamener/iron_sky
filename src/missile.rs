@@ -68,8 +68,8 @@ impl Missile {
         c: piston_window::Context,
         g: &mut G2d,
     ) -> () {
-        use settings::missile::POINTER_COLOR;
         use offscreen::{draw_anim_offscreen, draw_offscreen};
+        use settings::missile::POINTER_COLOR;
 
         match self.state {
             State::Active => {
@@ -161,7 +161,7 @@ pub fn initialise_missiles() -> Vec<Missile> {
         let missile = Missile::new(
             Collider::new(Point::new(0.0, 0.0), missile::COLLIDER_RADIUS),
             Point::new(0.0, 0.0),
-            Animation::new(missile::EXPLOSION_LENGTH, missile::EXPLOSION_ZOOM),
+            Animation::new(missile::EXPLOSION_LENGTH, missile::EXPLOSION_SCALE),
         );
 
         missiles.push(missile);
