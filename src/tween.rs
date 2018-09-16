@@ -101,6 +101,10 @@ impl Tween {
         }
     }
 
+    pub fn is_playing(&self) -> bool {
+        self.playing
+    }
+
     pub fn reset(&mut self) -> () {
         self.playing = true;
         self.duration = 0.0;

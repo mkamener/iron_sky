@@ -44,7 +44,11 @@ impl UI {
             player::State::Inactive => {
                 self.go_to_game_over();
                 self.game_over_tween.update(dt);
-                self.restart_tween.update(dt);
+
+                // Only start showing restart text after game over has appeared
+                if !self.game_over_tween.is_playing() {
+                    self.restart_tween.update(dt);
+                }
             }
         }
     }
