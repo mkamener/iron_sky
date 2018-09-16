@@ -24,6 +24,8 @@ pub mod player {
     // Explosion Settings
     pub const EXPLOSION_LENGTH: f64 = 1.0;
     pub const EXPLOSION_ZOOM: f64 = 1.5;
+
+    pub const SCALE: f64 = 0.8;
 }
 
 pub mod missile {
@@ -38,6 +40,8 @@ pub mod missile {
     pub const EXPLOSION_ZOOM: f64 = 1.0;
 
     pub const POINTER_COLOR: [f32; 3] = [0.74, 0.84, 0.86];
+
+    pub const SCALE: f64 = 1.0;
 }
 
 pub mod missile_generator {

@@ -282,6 +282,7 @@ pub fn load_sprite(
     window: &mut PistonWindow,
     folder: &::std::path::PathBuf,
     file: &str,
+    scale: f64,
 ) -> Sprite<G2dTexture> {
     let texture = Texture::from_path(
         &mut window.factory,
@@ -289,7 +290,9 @@ pub fn load_sprite(
         Flip::None,
         &TextureSettings::new(),
     ).unwrap();
-    Sprite::from_texture(::std::rc::Rc::new(texture))
+    let mut spr = Sprite::from_texture(::std::rc::Rc::new(texture));
+    spr.set_scale(scale, scale);
+    spr
 }
 
 pub fn load_texture(

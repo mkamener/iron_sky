@@ -44,7 +44,7 @@ fn main() {
         &mut window,
         &assets,
         ["playerLeft.png", "player.png", "playerRight.png"],
-        0.8,
+        settings::player::SCALE,
     );
     let mut player = Player::new(
         Collider::new(centre, settings::player::COLLIDER_RADIUS),
@@ -55,7 +55,12 @@ fn main() {
     );
 
     // Missiles
-    let mut spr_missile = load_sprite(&mut window, &assets, "missile.png");
+    let mut spr_missile = load_sprite(
+        &mut window,
+        &assets,
+        "missile.png",
+        settings::missile::SCALE,
+    );
     let mut tex_explosion_missile =
         AnimTexture::new(&mut window, &assets, "explosions/4.png", 8, 8);
 
@@ -64,17 +69,17 @@ fn main() {
     missile_gen.reset_missiles(&mut missiles);
 
     // Pickups
-    let mut spr_pickup = load_sprite(&mut window, &assets, "star.png");
-    spr_pickup.set_scale(settings::pickup::SCALE, settings::pickup::SCALE);
+    let mut spr_pickup = load_sprite(&mut window, &assets, "star.png", settings::pickup::SCALE);
 
     let mut pickups = initialise_pickups();
     let mut pickup_gen = pickups::Generator::new();
     pickup_gen.reset_pickups(&mut pickups);
 
     // Offscreen Pointer
-    let mut spr_pointer = load_sprite(&mut window, &assets, "offscreen_pointer.png");
-    spr_pointer.set_scale(
-        settings::offscreen_pointer::SCALE,
+    let mut spr_pointer = load_sprite(
+        &mut window,
+        &assets,
+        "offscreen_pointer.png",
         settings::offscreen_pointer::SCALE,
     );
 

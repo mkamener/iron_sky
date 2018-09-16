@@ -16,7 +16,7 @@ impl Background {
         let mut all_bg: Vec<BGLayer> = vec![];
 
         for (file, factor) in names_and_factors.iter() {
-            let bg = load_sprite(window, folder, file);
+            let bg = load_sprite(window, folder, file, 1.0);
             all_bg.push(BGLayer::new(bg, *factor));
         }
 
