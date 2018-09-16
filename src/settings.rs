@@ -74,12 +74,12 @@ pub mod ui {
     pub const SCORE_FONT_SIZE: u32 = 32;
 
     pub mod game_over {
-        pub const GAME_OVER_V_OFFSET: f64 = 300.0;
-        pub const GAME_OVER_H_OFFSET: f64 = 540.0;
+        pub const GAME_OVER_V_OFFSET: f64 = 350.0;
+        pub const GAME_OVER_H_OFFSET: f64 = 455.0;
         pub const GAME_OVER_COLOR: [f32; 4] = [0.17, 0.74, 0.18, 1.0];
-        pub const GAME_OVER_FONT_SIZE: u32 = 48;
+        pub const GAME_OVER_FONT_SIZE: u32 = 72;
 
-        pub const FADE_IN_LENGTH: f64 = 0.5;
+        pub const FADE_IN_LENGTH: f64 = 1.0;
 
         pub const RESTART_V_OFFSET: f64 = 540.0;
         pub const RESTART_H_OFFSET: f64 = 500.0;
