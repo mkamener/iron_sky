@@ -68,7 +68,9 @@ impl Missile {
         c: piston_window::Context,
         g: &mut G2d,
     ) -> () {
+        use settings::missile::POINTER_COLOR;
         use offscreen::{draw_anim_offscreen, draw_offscreen};
+
         match self.state {
             State::Active => {
                 let rot = self.get_rotation();
@@ -76,7 +78,7 @@ impl Missile {
                 sprite.set_rotation(rot);
                 sprite.draw(c.transform, g);
 
-                draw_offscreen(sprite, pointer, self.collider.pos, c, g);
+                draw_offscreen(sprite, pointer, self.collider.pos, POINTER_COLOR, c, g);
             }
             State::Exploding => {
                 self.explosion.draw(explosion_tex, c, g);
@@ -86,6 +88,7 @@ impl Missile {
                     explosion_tex,
                     pointer,
                     self.collider.pos,
+                    POINTER_COLOR,
                     c,
                     g,
                 );

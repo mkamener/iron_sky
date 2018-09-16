@@ -36,6 +36,8 @@ pub mod missile {
     // Explosion Settings
     pub const EXPLOSION_LENGTH: f64 = 0.5;
     pub const EXPLOSION_ZOOM: f64 = 1.0;
+
+    pub const POINTER_COLOR: [f32; 3] = [0.74, 0.84, 0.86];
 }
 
 pub mod missile_generator {
@@ -56,6 +58,8 @@ pub mod pickup {
 
     // Collider
     pub const COLLIDER_RADIUS: f64 = 20.0;
+
+    pub const POINTER_COLOR: [f32; 3] = [0.92, 0.99, 1.0];
 }
 
 pub mod pickup_generator {

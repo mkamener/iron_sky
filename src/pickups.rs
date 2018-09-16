@@ -137,6 +137,7 @@ impl Pickup {
     ) -> () {
         use offscreen::draw_offscreen;
         use settings::pickup;
+        use settings::pickup::POINTER_COLOR;
 
         match self.state {
             State::Active => {
@@ -144,7 +145,7 @@ impl Pickup {
                 sprite.set_rotation(self.rot_tween.get_val());
                 sprite.draw(c.transform, g);
 
-                draw_offscreen(sprite, pointer, self.collider.pos, c, g);
+                draw_offscreen(sprite, pointer, self.collider.pos, POINTER_COLOR, c, g);
             }
             State::Collected => {
                 sprite.set_position(self.collider.pos.x, self.collider.pos.y);
@@ -164,7 +165,7 @@ impl Pickup {
                 sprite.set_opacity(self.disappear_opacity_tween.get_val() as f32);
                 sprite.draw(c.transform, g);
 
-                draw_offscreen(sprite, pointer, self.collider.pos, c, g);
+                draw_offscreen(sprite, pointer, self.collider.pos, POINTER_COLOR, c, g);
 
                 // Reset scale and opacity
                 sprite.set_scale(pickup::SCALE, pickup::SCALE);

@@ -9,11 +9,12 @@ pub fn draw_offscreen(
     obj_spr: &mut Sprite<G2dTexture>,
     pointer_spr: &mut Sprite<G2dTexture>,
     obj_pos: Point,
+    color: [f32; 3],
     c: piston_window::Context,
     g: &mut G2d,
 ) -> () {
     if let Some((pos, rot)) = place_pointer(obj_pos) {
-        draw_pointer(pointer_spr, pos, rot, c, g);
+        draw_pointer(pointer_spr, pos, rot, color, c, g);
         draw_overlay(obj_spr, pos, c, g)
     }
 }
@@ -23,13 +24,14 @@ pub fn draw_anim_offscreen(
     obj_anim_tex: &mut AnimTexture,
     pointer_spr: &mut Sprite<G2dTexture>,
     obj_pos: Point,
+    color: [f32; 3],
     c: piston_window::Context,
     g: &mut G2d,
 ) -> () {
     use settings::offscreen_pointer::OBJ_SCALE;
 
     if let Some((pos, rot)) = place_pointer(obj_pos) {
-        draw_pointer(pointer_spr, pos, rot, c, g);
+        draw_pointer(pointer_spr, pos, rot, color, c, g);
         obj_anim.draw_at_pos(obj_anim_tex, pos, OBJ_SCALE, c, g);
     }
 }
@@ -38,11 +40,13 @@ fn draw_pointer(
     sprite: &mut Sprite<G2dTexture>,
     pos: Point,
     rot: f64,
+    color: [f32; 3],
     c: piston_window::Context,
     g: &mut G2d,
 ) -> () {
     sprite.set_position(pos.x, pos.y);
     sprite.set_rotation(rot);
+    sprite.set_color(color[0], color[1], color[2]);
     sprite.draw(c.transform, g);
 }
 
