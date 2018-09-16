@@ -52,6 +52,8 @@ pub mod pickup {
     pub const COLLECT_ROTATION_PERIOD: f64 = 0.4;
     pub const COLLECT_SCALE: f64 = 0.5;
 
+    pub const DISAPPEAR_FADE_OUT: f64 = 0.2;
+
     // Collider
     pub const COLLIDER_RADIUS: f64 = 20.0;
 }

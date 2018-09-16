@@ -11,6 +11,7 @@ use tween::*;
 enum State {
     Active,
     Collected,
+    Disappearing,
     Inactive,
 }
 
@@ -19,9 +20,11 @@ pub struct Pickup {
     pub collider: Collider,
     time_alive: f64,
     rot_tween: Tween,
-    opacity_tween: Tween,
+    collect_opacity_tween: Tween,
     collect_rot_tween: Tween,
     grow_tween: Tween,
+    disappear_opacity_tween: Tween,
+    shrink_tween: Tween,
 }
 
 impl Collides for Pickup {
@@ -49,7 +52,7 @@ impl Pickup {
                 Easing::Linear,
                 true,
             ),
-            opacity_tween: Tween::new(
+            collect_opacity_tween: Tween::new(
                 vec![(0.0, 1.0), (1.0, 0.0)],
                 COLLECT_FADE_OUT,
                 Easing::EaseOut,
@@ -67,6 +70,18 @@ impl Pickup {
                 Easing::EaseOut,
                 false,
             ),
+            disappear_opacity_tween: Tween::new(
+                vec![(0.0, 1.0), (1.0, 0.0)],
+                DISAPPEAR_FADE_OUT,
+                Easing::EaseOut,
+                false,
+            ),
+            shrink_tween: Tween::new(
+                vec![(0.0, SCALE), (1.0, 0.0)],
+                DISAPPEAR_FADE_OUT,
+                Easing::EaseInOut,
+                false,
+            ),
         }
     }
 
@@ -82,18 +97,30 @@ impl Pickup {
                 self.collider.pos = self.collider.pos - player.velocity() * dt;
 
                 if self.time_alive > pickup::MAX_TIME {
-                    self.reset();
+                    self.disappear();
                 }
             }
             State::Collected => {
-                self.opacity_tween.update(dt);
+                self.collect_opacity_tween.update(dt);
                 self.collect_rot_tween.update(dt);
                 self.grow_tween.update(dt);
 
                 // Update position based off player movement
                 self.collider.pos = self.collider.pos - player.velocity() * dt;
 
-                if !self.opacity_tween.is_playing() {
+                if !self.collect_opacity_tween.is_playing() {
+                    self.reset();
+                }
+            }
+            State::Disappearing => {
+                self.disappear_opacity_tween.update(dt);
+                self.rot_tween.update(dt);
+                self.shrink_tween.update(dt);
+
+                // Update position based off player movement
+                self.collider.pos = self.collider.pos - player.velocity() * dt;
+
+                if !self.disappear_opacity_tween.is_playing() {
                     self.reset();
                 }
             }
@@ -130,8 +157,28 @@ impl Pickup {
                 sprite.set_position(self.collider.pos.x, self.collider.pos.y);
                 sprite.set_rotation(self.collect_rot_tween.get_val());
                 sprite.set_scale(self.grow_tween.get_val(), self.grow_tween.get_val());
-                sprite.set_opacity(self.opacity_tween.get_val() as f32);
+                sprite.set_opacity(self.collect_opacity_tween.get_val() as f32);
                 sprite.draw(c.transform, g);
+
+                // Reset scale and opacity
+                sprite.set_scale(pickup::SCALE, pickup::SCALE);
+                sprite.set_opacity(1.0);
+            }
+            State::Disappearing => {
+                sprite.set_position(self.collider.pos.x, self.collider.pos.y);
+                sprite.set_rotation(self.rot_tween.get_val());
+                sprite.set_scale(self.shrink_tween.get_val(), self.shrink_tween.get_val());
+                sprite.set_opacity(self.disappear_opacity_tween.get_val() as f32);
+                sprite.draw(c.transform, g);
+
+                draw_offscreen(
+                    sprite,
+                    pointer,
+                    self.collider.pos,
+                    self.rot_tween.get_val(),
+                    c,
+                    g,
+                );
 
                 // Reset scale and opacity
                 sprite.set_scale(pickup::SCALE, pickup::SCALE);
@@ -146,9 +193,17 @@ impl Pickup {
         self.collider.disable();
         self.rot_tween.stop();
 
-        self.opacity_tween.reset();
+        self.collect_opacity_tween.reset();
         self.collect_rot_tween.reset();
         self.grow_tween.reset();
+    }
+
+    pub fn disappear(&mut self) -> () {
+        self.state = State::Disappearing;
+        self.collider.disable();
+
+        self.disappear_opacity_tween.reset();
+        self.shrink_tween.reset();
     }
 
     pub fn place(&mut self, pos: Point) -> () {
@@ -162,7 +217,12 @@ impl Pickup {
     pub fn reset(&mut self) -> () {
         self.state = State::Inactive;
         self.collider.disable();
+
         self.rot_tween.stop();
+
+        self.collect_opacity_tween.stop();
+        self.collect_rot_tween.stop();
+        self.grow_tween.stop();
     }
 }
 
