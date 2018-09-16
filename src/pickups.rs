@@ -144,14 +144,7 @@ impl Pickup {
                 sprite.set_rotation(self.rot_tween.get_val());
                 sprite.draw(c.transform, g);
 
-                draw_offscreen(
-                    sprite,
-                    pointer,
-                    self.collider.pos,
-                    self.rot_tween.get_val(),
-                    c,
-                    g,
-                );
+                draw_offscreen(sprite, pointer, self.collider.pos, c, g);
             }
             State::Collected => {
                 sprite.set_position(self.collider.pos.x, self.collider.pos.y);
@@ -171,14 +164,7 @@ impl Pickup {
                 sprite.set_opacity(self.disappear_opacity_tween.get_val() as f32);
                 sprite.draw(c.transform, g);
 
-                draw_offscreen(
-                    sprite,
-                    pointer,
-                    self.collider.pos,
-                    self.rot_tween.get_val(),
-                    c,
-                    g,
-                );
+                draw_offscreen(sprite, pointer, self.collider.pos, c, g);
 
                 // Reset scale and opacity
                 sprite.set_scale(pickup::SCALE, pickup::SCALE);

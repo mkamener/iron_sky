@@ -76,7 +76,7 @@ impl Missile {
                 sprite.set_rotation(rot);
                 sprite.draw(c.transform, g);
 
-                draw_offscreen(sprite, pointer, self.collider.pos, rot, c, g);
+                draw_offscreen(sprite, pointer, self.collider.pos, c, g);
             }
             State::Exploding => {
                 self.explosion.draw(explosion_tex, c, g);

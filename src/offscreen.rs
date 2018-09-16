@@ -9,13 +9,12 @@ pub fn draw_offscreen(
     obj_spr: &mut Sprite<G2dTexture>,
     pointer_spr: &mut Sprite<G2dTexture>,
     obj_pos: Point,
-    obj_rot: f64,
     c: piston_window::Context,
     g: &mut G2d,
 ) -> () {
     if let Some((pos, rot)) = place_pointer(obj_pos) {
         draw_pointer(pointer_spr, pos, rot, c, g);
-        draw_overlay(obj_spr, pos, obj_rot, c, g)
+        draw_overlay(obj_spr, pos, c, g)
     }
 }
 
@@ -50,7 +49,6 @@ fn draw_pointer(
 fn draw_overlay(
     sprite: &mut Sprite<G2dTexture>,
     pos: Point,
-    rot: f64,
     c: piston_window::Context,
     g: &mut G2d,
 ) -> () {
@@ -60,7 +58,6 @@ fn draw_overlay(
 
     sprite.set_scale(x_scale * OBJ_SCALE, y_scale * OBJ_SCALE);
     sprite.set_position(pos.x, pos.y);
-    sprite.set_rotation(rot);
     sprite.draw(c.transform, g);
 
     // Set scale back to original
