@@ -5,6 +5,7 @@ use piston_window::*;
 use player::*;
 use sprite::*;
 use traits::Collides;
+use tween::*;
 
 #[derive(Copy, Clone, PartialEq)]
 enum State {
@@ -16,7 +17,7 @@ pub struct Pickup {
     state: State,
     pub collider: Collider,
     time_alive: f64,
-    rot: f64,
+    rot_tween: Tween,
 }
 
 impl Collides for Pickup {
@@ -31,12 +32,19 @@ impl Collides for Pickup {
 
 impl Pickup {
     pub fn new(mut collider: Collider) -> Pickup {
+        use settings::pickup;
+
         collider.disable();
         Pickup {
             state: State::Inactive,
             collider: collider,
             time_alive: 0.0,
-            rot: 0.0,
+            rot_tween: Tween::new(
+                vec![(0.0, 0.0), (1.0, 360.0)],
+                pickup::ROTATION_PERIOD,
+                Easing::Linear,
+                true,
+            ),
         }
     }
 
@@ -46,6 +54,7 @@ impl Pickup {
         match self.state {
             State::Active => {
                 self.time_alive += dt;
+                self.rot_tween.update(dt);
 
                 // Update position based off player movement
                 self.collider.pos = self.collider.pos - player.velocity() * dt;
@@ -69,12 +78,18 @@ impl Pickup {
 
         match self.state {
             State::Active => {
-                self.set_rotation();
                 sprite.set_position(self.collider.pos.x, self.collider.pos.y);
-                sprite.set_rotation(self.rot);
+                sprite.set_rotation(self.rot_tween.get_val());
                 sprite.draw(c.transform, g);
 
-                draw_offscreen(sprite, pointer, self.collider.pos, self.rot, c, g);
+                draw_offscreen(
+                    sprite,
+                    pointer,
+                    self.collider.pos,
+                    self.rot_tween.get_val(),
+                    c,
+                    g,
+                );
             }
             State::Inactive => {}
         }
@@ -88,18 +103,14 @@ impl Pickup {
         self.collider.pos = pos;
         self.state = State::Active;
         self.collider.enable();
+        self.rot_tween.reset();
         self.time_alive = 0.0;
     }
 
     pub fn reset(&mut self) -> () {
         self.state = State::Inactive;
         self.collider.disable();
-    }
-
-    fn set_rotation(&mut self) -> () {
-        use settings::pickup;
-
-        self.rot = 360.0 * (self.time_alive / pickup::ROTATION_PERIOD);
+        self.rot_tween.stop();
     }
 }
 

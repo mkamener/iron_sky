@@ -2,12 +2,17 @@ pub type KeyFrame = (f64, f64); // (frac, value)
 
 #[allow(dead_code)]
 pub enum Easing {
+    Linear,
     EaseIn,
     EaseOut,
     EaseInOut,
 }
 
 type EasingFn = fn(f64) -> f64;
+
+fn linear(x: f64) -> f64 {
+    x
+}
 
 fn ease_in(x: f64) -> f64 {
     x.powi(3)
@@ -27,6 +32,7 @@ fn ease_in_out(x: f64) -> f64 {
 
 fn get_easing_fn(easing: Easing) -> EasingFn {
     match easing {
+        Easing::Linear => linear,
         Easing::EaseIn => ease_in,
         Easing::EaseOut => ease_out,
         Easing::EaseInOut => ease_in_out,
@@ -126,6 +132,13 @@ mod tests {
             .map(f)
             .zip(expected_output.into_iter())
             .for_each(|(input, expected_output)| assert_approx_eq!(input, expected_output, 1e-4));
+    }
+
+    #[test]
+    fn it_should_calcualate_correct_linear_easing() {
+        let input = vec![0.0, 0.25, 0.5, 0.75, 1.0];
+        let expected_output = vec![0.0, 0.25, 0.5, 0.75, 1.0];
+        test_easing_function(input, expected_output, linear);
     }
 
     #[test]
