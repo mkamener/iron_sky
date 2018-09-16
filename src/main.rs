@@ -65,7 +65,7 @@ fn main() {
 
     // Pickups
     let mut spr_pickup = load_sprite(&mut window, &assets, "star.png");
-    spr_pickup.set_scale(0.3, 0.3);
+    spr_pickup.set_scale(settings::pickup::SCALE, settings::pickup::SCALE);
 
     let mut pickups = initialise_pickups();
     let mut pickup_gen = pickups::Generator::new();

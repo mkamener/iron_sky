@@ -10,6 +10,7 @@ use tween::*;
 #[derive(Copy, Clone, PartialEq)]
 enum State {
     Active,
+    Collected,
     Inactive,
 }
 
@@ -18,6 +19,9 @@ pub struct Pickup {
     pub collider: Collider,
     time_alive: f64,
     rot_tween: Tween,
+    opacity_tween: Tween,
+    collect_rot_tween: Tween,
+    grow_tween: Tween,
 }
 
 impl Collides for Pickup {
@@ -32,7 +36,7 @@ impl Collides for Pickup {
 
 impl Pickup {
     pub fn new(mut collider: Collider) -> Pickup {
-        use settings::pickup;
+        use settings::pickup::*;
 
         collider.disable();
         Pickup {
@@ -41,9 +45,27 @@ impl Pickup {
             time_alive: 0.0,
             rot_tween: Tween::new(
                 vec![(0.0, 0.0), (1.0, 360.0)],
-                pickup::ROTATION_PERIOD,
+                ROTATION_PERIOD,
                 Easing::Linear,
                 true,
+            ),
+            opacity_tween: Tween::new(
+                vec![(0.0, 1.0), (1.0, 0.0)],
+                COLLECT_FADE_OUT,
+                Easing::EaseOut,
+                false,
+            ),
+            collect_rot_tween: Tween::new(
+                vec![(0.0, 360.0), (1.0, 0.0)],
+                COLLECT_ROTATION_PERIOD,
+                Easing::Linear,
+                true,
+            ),
+            grow_tween: Tween::new(
+                vec![(0.0, SCALE), (1.0, COLLECT_SCALE)],
+                COLLECT_FADE_OUT,
+                Easing::EaseOut,
+                false,
             ),
         }
     }
@@ -63,6 +85,18 @@ impl Pickup {
                     self.reset();
                 }
             }
+            State::Collected => {
+                self.opacity_tween.update(dt);
+                self.collect_rot_tween.update(dt);
+                self.grow_tween.update(dt);
+
+                // Update position based off player movement
+                self.collider.pos = self.collider.pos - player.velocity() * dt;
+
+                if !self.opacity_tween.is_playing() {
+                    self.reset();
+                }
+            }
             State::Inactive => {}
         }
     }
@@ -75,6 +109,7 @@ impl Pickup {
         g: &mut G2d,
     ) -> () {
         use offscreen::draw_offscreen;
+        use settings::pickup;
 
         match self.state {
             State::Active => {
@@ -91,12 +126,29 @@ impl Pickup {
                     g,
                 );
             }
+            State::Collected => {
+                sprite.set_position(self.collider.pos.x, self.collider.pos.y);
+                sprite.set_rotation(self.collect_rot_tween.get_val());
+                sprite.set_scale(self.grow_tween.get_val(), self.grow_tween.get_val());
+                sprite.set_opacity(self.opacity_tween.get_val() as f32);
+                sprite.draw(c.transform, g);
+
+                // Reset scale and opacity
+                sprite.set_scale(pickup::SCALE, pickup::SCALE);
+                sprite.set_opacity(1.0);
+            }
             State::Inactive => {}
         }
     }
 
     pub fn collect(&mut self) -> () {
-        self.reset();
+        self.state = State::Collected;
+        self.collider.disable();
+        self.rot_tween.stop();
+
+        self.opacity_tween.reset();
+        self.collect_rot_tween.reset();
+        self.grow_tween.reset();
     }
 
     pub fn place(&mut self, pos: Point) -> () {

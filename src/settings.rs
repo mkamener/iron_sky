@@ -46,6 +46,11 @@ pub mod missile_generator {
 pub mod pickup {
     pub const ROTATION_PERIOD: f64 = 4.0;
     pub const MAX_TIME: f64 = 10.0;
+    pub const SCALE: f64 = 0.3;
+
+    pub const COLLECT_FADE_OUT: f64 = 0.5;
+    pub const COLLECT_ROTATION_PERIOD: f64 = 0.4;
+    pub const COLLECT_SCALE: f64 = 0.5;
 
     // Collider
     pub const COLLIDER_RADIUS: f64 = 20.0;
