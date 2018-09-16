@@ -13,10 +13,12 @@ impl Background {
         folder: &::std::path::PathBuf,
         names_and_factors: &'static [(&str, f64)],
     ) -> Background {
+        use settings::background::SCALE;
+
         let mut all_bg: Vec<BGLayer> = vec![];
 
         for (file, factor) in names_and_factors.iter() {
-            let bg = load_sprite(window, folder, file, 1.0);
+            let bg = load_sprite(window, folder, file, SCALE);
             all_bg.push(BGLayer::new(bg, *factor));
         }
 

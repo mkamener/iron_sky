@@ -15,33 +15,33 @@ pub mod window {
 }
 
 pub mod player {
-    pub const SPEED: f64 = 800.0;
+    pub const SPEED: f64 = 400.0;
     pub const ANGULAR_VELOCITY: f64 = 240.0; // Degrees per second
 
     // Collider
-    pub const COLLIDER_RADIUS: f64 = 30.0;
+    pub const COLLIDER_RADIUS: f64 = 16.0;
 
     // Explosion Settings
     pub const EXPLOSION_LENGTH: f64 = 1.0;
-    pub const EXPLOSION_ZOOM: f64 = 1.5;
+    pub const EXPLOSION_ZOOM: f64 = 1.0;
 
-    pub const SCALE: f64 = 0.8;
+    pub const SCALE: f64 = 0.5;
 }
 
 pub mod missile {
-    pub const MAX_SPEED: f64 = 1500.0;
-    pub const ACCELERATION: f64 = 3500.0;
+    pub const MAX_SPEED: f64 = 750.0;
+    pub const ACCELERATION: f64 = 1750.0;
 
     // Collider
-    pub const COLLIDER_RADIUS: f64 = 20.0;
+    pub const COLLIDER_RADIUS: f64 = 10.0;
 
     // Explosion Settings
     pub const EXPLOSION_LENGTH: f64 = 0.5;
-    pub const EXPLOSION_ZOOM: f64 = 1.0;
+    pub const EXPLOSION_ZOOM: f64 = 0.7;
 
     pub const POINTER_COLOR: [f32; 3] = [0.74, 0.84, 0.86];
 
-    pub const SCALE: f64 = 1.0;
+    pub const SCALE: f64 = 0.5;
 }
 
 pub mod missile_generator {
@@ -52,16 +52,16 @@ pub mod missile_generator {
 pub mod pickup {
     pub const ROTATION_PERIOD: f64 = 4.0;
     pub const MAX_TIME: f64 = 10.0;
-    pub const SCALE: f64 = 0.3;
+    pub const SCALE: f64 = 0.15;
 
     pub const COLLECT_FADE_OUT: f64 = 0.5;
     pub const COLLECT_ROTATION_PERIOD: f64 = 0.4;
-    pub const COLLECT_SCALE: f64 = 0.5;
+    pub const COLLECT_SCALE: f64 = 0.25;
 
     pub const DISAPPEAR_FADE_OUT: f64 = 0.2;
 
     // Collider
-    pub const COLLIDER_RADIUS: f64 = 20.0;
+    pub const COLLIDER_RADIUS: f64 = 10.0;
 
     pub const POINTER_COLOR: [f32; 3] = [0.92, 0.99, 1.0];
 }
@@ -76,7 +76,7 @@ pub mod offscreen_pointer {
     pub const SCALE: f64 = 0.3;
     pub const OFFSET: f64 = 60.0;
 
-    pub const OBJ_SCALE: f64 = 0.4;
+    pub const OBJ_SCALE: f64 = 0.6;
 }
 
 pub mod ui {
@@ -106,6 +106,8 @@ pub mod ui {
 }
 
 pub mod background {
+    pub const SCALE: f64 = 0.6;
+
     pub const FILES: &'static [(&str, f64)] = &[
         ("bkgd_0.png", 0.0),
         ("bkgd_1.png", 0.01),
