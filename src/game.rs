@@ -71,7 +71,7 @@ impl Div<f64> for Point {
 
 impl Point {
     pub fn new(x: f64, y: f64) -> Point {
-        Point { x: x, y: y }
+        Point { x, y }
     }
 
     pub fn normalized(self) -> Point {
@@ -107,8 +107,8 @@ impl Collider {
         }
         Collider {
             state: ColliderState::Enabled,
-            pos: pos,
-            r: r,
+            pos,
+            r,
         }
     }
 
@@ -178,8 +178,8 @@ impl AnimTexture {
         }
 
         AnimTexture {
-            texture: texture,
-            frames: frames,
+            texture,
+            frames,
         }
     }
 }
@@ -196,10 +196,10 @@ impl Animation {
     pub fn new(length: f64, scale: f64) -> Animation {
         Animation {
             pos: Point::new(0.0, 0.0),
-            length: length,
+            length,
             duration: 0.0,
             playing: false,
-            scale: scale,
+            scale,
         }
     }
 

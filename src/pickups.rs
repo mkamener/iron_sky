@@ -44,7 +44,7 @@ impl Pickup {
         collider.disable();
         Pickup {
             state: State::Inactive,
-            collider: collider,
+            collider,
             time_alive: 0.0,
             rot_tween: Tween::new(
                 vec![(0.0, 0.0), (1.0, 360.0)],

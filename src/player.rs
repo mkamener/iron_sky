@@ -40,8 +40,8 @@ impl Player {
     pub fn new(collider: Collider, explosion: Animation) -> Player {
         Player {
             state: State::Active(Action::NoMove),
-            collider: collider,
-            explosion: explosion,
+            collider,
+            explosion,
             rot: 0.0,
         }
     }

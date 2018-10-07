@@ -35,9 +35,9 @@ impl Missile {
         collider.disable();
         Missile {
             state: State::Inactive,
-            collider: collider,
-            velocity: velocity,
-            explosion: explosion,
+            collider,
+            velocity,
+            explosion,
         }
     }
 

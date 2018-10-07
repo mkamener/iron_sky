@@ -52,10 +52,10 @@ impl BGLayer {
         let clamp = sprite.bounding_box();
         let clamp = Point::new(clamp[2], clamp[3]);
         BGLayer {
-            sprite: sprite,
+            sprite,
             pos: Point::new(0.0, 0.0),
-            clamp: clamp,
-            factor: factor,
+            clamp,
+            factor,
         }
     }
 
