@@ -69,7 +69,7 @@ pub mod pickup_generator {
 }
 
 pub mod offscreen_pointer {
-    pub const SCALE: f64 = 0.3;
+    pub const SCALE: f64 = 1.0;
     pub const OFFSET: f64 = 60.0;
 
     pub const OBJ_SCALE: f64 = 0.6;
