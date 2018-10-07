@@ -17,6 +17,7 @@ pub mod window {
 pub mod player {
     pub const SPEED: f64 = 220.0;
     pub const ANGULAR_VELOCITY: f64 = 130.0; // Degrees per second
+    pub const SCALE: f64 = 1.0;
 
     // Collider
     pub const COLLIDER_RADIUS: f64 = 16.0;
@@ -24,15 +25,13 @@ pub mod player {
     // Explosion Settings
     pub const EXPLOSION_LENGTH: f64 = 2.0;
     pub const EXPLOSION_SCALE: f64 = 1.0;
-
-    pub const SCALE: f64 = 0.5;
 }
 
 pub mod missile {
     pub const MAX_SPEED: f64 = 390.0;
     pub const ACCELERATION: f64 = 445.0;
     pub const POINTER_COLOR: [f32; 3] = [0.74, 0.84, 0.86];
-    pub const SCALE: f64 = 0.5;
+    pub const SCALE: f64 = 1.0;
 
     // Collider
     pub const COLLIDER_RADIUS: f64 = 10.0;
