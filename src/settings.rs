@@ -50,12 +50,12 @@ pub mod missile_generator {
 pub mod pickup {
     pub const ROTATION_PERIOD: f64 = 8.0;
     pub const MAX_TIME: f64 = 20.0;
-    pub const SCALE: f64 = 0.15;
+    pub const SCALE: f64 = 1.0;
     pub const POINTER_COLOR: [f32; 3] = [0.92, 0.99, 1.0];
 
     pub const COLLECT_FADE_OUT: f64 = 0.8;
     pub const COLLECT_ROTATION_PERIOD: f64 = 0.6;
-    pub const COLLECT_SCALE: f64 = 0.4;
+    pub const COLLECT_SCALE: f64 = 2.8;
 
     pub const DISAPPEAR_FADE_OUT: f64 = 0.4;
 
