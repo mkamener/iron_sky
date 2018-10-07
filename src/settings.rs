@@ -103,7 +103,7 @@ pub mod ui {
 }
 
 pub mod background {
-    pub const SCALE: f64 = 0.6;
+    pub const SCALE: f64 = 1.0;
 
     pub const FILES: &'static [(&str, f64)] = &[
         ("bkgd_0.png", 0.0),
